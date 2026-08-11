@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registrar corte - Lujan Barber Shop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        #barbero {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: white;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .precio {
+            margin-top: 20px;
+            padding: 18px;
+            background: #222;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            color: #111;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        .volver {
+            background: #222;
+            color: white;
+        }
+
+        #transferenciaDiv {
+            display: none;
+        }
+
+        #mensaje {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>✂️ Registrar corte</h1>
+
+    <div id="barbero">
+        Cargando barbero...
+    </div>
+
+    <label for="servicio">Servicio</label>
+
+    <select id="servicio">
+        <option value="">Seleccionar servicio</option>
+    </select>
+
+    <label for="descripcion">Descripción del corte</label>
+
+    <textarea
+        id="descripcion"
+        placeholder="Ej: Degradé bajo, máquina 1 a los costados..."
+    ></textarea>
+
+    <label for="formaPago">Forma de pago</label>
+
+    <select id="formaPago">
+
+        <option value="EFECTIVO">
+            Efectivo
+        </option>
+
+        <option value="TRANSFERENCIA">
+            Transferencia
+        </option>
+
+    </select>
+
+    <div id="transferenciaDiv">
+
+        <label for="nombreTransferencia">
+            Nombre de la transferencia
+        </label>
+
+        <input
+            type="text"
+            id="nombreTransferencia"
+            placeholder="Ej: Juan Pérez"
+        >
+
+    </div>
+
+    <div class="precio">
+        $<span id="precio">0</span>
+    </div>
+
+    <button onclick="registrarCorte()">
+        REGISTRAR CORTE
+    </button>
+
+    <button class="volver" onclick="volver()">
+        VOLVER
+    </button>
+
+    <div id="mensaje"></div>
+
+</div>
+
+<script>
+
+    const idBarbero = localStorage.getItem("idBarbero");
+    const nombreBarbero = localStorage.getItem("nombreBarbero");
+
+    if (!idBarbero || !nombreBarbero) {
+        window.location.href = "/";
+    }
+
+    document.getElementById("barbero").textContent =
+        "Barbero: " + nombreBarbero;
+
+
+    // CARGAR SERVICIOS
+
+    fetch("/servicios")
+        .then(response => response.json())
+        .then(servicios => {
+
+            const select = document.getElementById("servicio");
+
+            servicios.forEach(servicio => {
+
+                if (servicio.activo) {
+
+                    const option = document.createElement("option");
+
+                    option.value = servicio.idServicio;
+
+                    option.textContent =
+                        servicio.nombre +
+                        " - $" +
+                        servicio.precio;
+
+                    option.dataset.precio = servicio.precio;
+
+                    select.appendChild(option);
+                }
+
+            });
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById("mensaje").textContent =
+                "Error al cargar los servicios.";
+        });
+
+
+    // CAMBIAR PRECIO
+
+    document.getElementById("servicio")
+        .addEventListener("change", function() {
+
+            const opcion =
+                this.options[this.selectedIndex];
+
+            const precio =
+                opcion.dataset.precio || 0;
+
+            document.getElementById("precio").textContent =
+                Number(precio).toLocaleString("es-AR");
+
+        });
+
+
+    // MOSTRAR NOMBRE DE TRANSFERENCIA
+
+    document.getElementById("formaPago")
+        .addEventListener("change", function() {
+
+            const div =
+                document.getElementById("transferenciaDiv");
+
+            if (this.value === "TRANSFERENCIA") {
+
+                div.style.display = "block";
+
+            } else {
+
+                div.style.display = "none";
+
+                document.getElementById(
+                    "nombreTransferencia"
+                ).value = "";
+            }
+
+        });
+
+
+    // REGISTRAR CORTE
+
+    function registrarCorte() {
+
+        const servicio =
+            document.getElementById("servicio");
+
+        const idServicio =
+            servicio.value;
+
+        const descripcion =
+            document.getElementById("descripcion").value.trim();
+
+        const formaPago =
+            document.getElementById("formaPago").value;
+
+        const nombreTransferencia =
+            document.getElementById(
+                "nombreTransferencia"
+            ).value.trim();
+
+
+        if (!idServicio) {
+
+            alert("Seleccioná un servicio.");
+
+            return;
+        }
+
+
+        if (!descripcion) {
+
+            alert("Ingresá una descripción del corte.");
+
+            return;
+        }
+
+
+        if (
+            formaPago === "TRANSFERENCIA" &&
+            !nombreTransferencia
+        ) {
+
+            alert(
+                "Ingresá el nombre de la transferencia."
+            );
+
+            return;
+        }
+
+
+        const datos = {
+
+            idBarbero: Number(idBarbero),
+
+            idServicio: Number(idServicio),
+
+            descripcion: descripcion,
+
+            formaPago: formaPago,
+
+            nombreTransferencia:
+                formaPago === "TRANSFERENCIA"
+                    ? nombreTransferencia
+                    : null
+        };
+
+
+        fetch("/atenciones", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(datos)
+
+        })
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "No se pudo registrar el corte"
+                );
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            document.getElementById(
+                "mensaje"
+            ).textContent =
+                "✅ Corte registrado correctamente.";
+
+            document.getElementById(
+                "descripcion"
+            ).value = "";
+
+            document.getElementById(
+                "servicio"
+            ).value = "";
+
+            document.getElementById(
+                "formaPago"
+            ).value = "EFECTIVO";
+
+            document.getElementById(
+                "transferenciaDiv"
+            ).style.display = "none";
+
+            document.getElementById(
+                "nombreTransferencia"
+            ).value = "";
+
+            document.getElementById(
+                "precio"
+            ).textContent = "0";
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById(
+                "mensaje"
+            ).textContent =
+                "❌ No se pudo registrar el corte.";
+        });
+    }
+
+
+    function volver() {
+
+        window.location.href = "/";
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,884 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mi resumen - Lujan Barber Shop</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #111;
+
+            color: white;
+
+            padding: 25px 15px;
+
+        }
+
+
+        .contenedor {
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            margin: auto;
+
+        }
+
+
+        .encabezado {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .encabezado h1 {
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .fecha {
+
+            color: #999;
+
+        }
+
+
+        .resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .tarjeta {
+
+            background: #222;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            text-align: center;
+
+        }
+
+
+        .tarjeta h3 {
+
+            color: #999;
+
+            margin-top: 0;
+
+        }
+
+
+        .numero {
+
+            font-size: 26px;
+
+            font-weight: bold;
+
+        }
+
+
+        .tabla-contenedor {
+
+            background: #222;
+
+            border-radius: 12px;
+
+            padding: 10px;
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        th,
+        td {
+
+            padding: 13px 10px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid #333;
+
+        }
+
+
+        th {
+
+            color: #999;
+
+        }
+
+
+        .mensaje {
+
+            text-align: center;
+
+            color: #999;
+
+            padding: 30px;
+
+        }
+
+
+        .boton {
+
+            display: block;
+
+            width: 100%;
+
+            max-width: 300px;
+
+            margin: 25px auto 0;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #111;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .boton:hover {
+
+            background: #ddd;
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .resumen {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="encabezado">
+
+        <h1>
+
+            ✂️ Hola,
+            <span id="nombreBarbero">
+                Barbero
+            </span>
+
+        </h1>
+
+
+        <div
+            class="fecha"
+            id="fecha">
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RESUMEN -->
+
+    <div class="resumen">
+
+
+        <div class="tarjeta">
+
+            <h3>
+                Mis cortes
+            </h3>
+
+            <div
+                class="numero"
+                id="cantidadCortes">
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <div class="tarjeta">
+
+            <h3>
+                Total generado
+            </h3>
+
+            <div
+                class="numero"
+                id="totalGenerado">
+
+                $0
+
+            </div>
+
+        </div>
+
+
+
+        <div class="tarjeta">
+
+            <h3>
+                Mi 40%
+            </h3>
+
+            <div
+                class="numero"
+                id="miGanancia">
+
+                $0
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- DETALLE -->
+
+    <h2>
+        Mis cortes de hoy
+    </h2>
+
+
+    <div class="tabla-contenedor">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Hora
+                    </th>
+
+                    <th>
+                        Servicio
+                    </th>
+
+                    <th>
+                        Descripción
+                    </th>
+
+                    <th>
+                        Pago
+                    </th>
+
+                    <th>
+                        Precio
+                    </th>
+
+                    <th>
+                        40%
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody id="tablaCortes">
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+
+    <button
+        class="boton"
+        onclick="cerrarSesion()">
+
+        CAMBIAR USUARIO
+
+    </button>
+
+
+</div>
+
+
+
+<script>
+
+
+// ==================================================
+// OBTENER USUARIO
+// ==================================================
+
+
+let idBarbero =
+    localStorage.getItem("idBarbero");
+
+
+let nombreBarbero =
+    localStorage.getItem("nombreBarbero");
+
+
+
+console.log(
+    "ID BARBERO:",
+    idBarbero
+);
+
+
+console.log(
+    "NOMBRE:",
+    nombreBarbero
+);
+
+
+
+document.getElementById(
+    "nombreBarbero"
+).textContent =
+    nombreBarbero || "Barbero";
+
+
+
+// ==================================================
+// FECHA
+// ==================================================
+
+
+const ahora =
+    new Date();
+
+
+document.getElementById(
+    "fecha"
+).textContent =
+    ahora.toLocaleDateString(
+        "es-AR",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    );
+
+
+
+// ==================================================
+// DINERO
+// ==================================================
+
+
+function dinero(valor) {
+
+    return "$" +
+        Number(valor || 0)
+            .toLocaleString("es-AR");
+
+}
+
+
+
+// ==================================================
+// CARGAR CORTES
+// ==================================================
+
+
+async function cargarCortes() {
+
+
+    const tabla =
+        document.getElementById(
+            "tablaCortes"
+        );
+
+
+    tabla.innerHTML = "";
+
+
+    try {
+
+
+        // ==========================================
+        // PEDIR CORTES
+        // ==========================================
+
+
+        const respuesta =
+            await fetch(
+                "/atenciones"
+            );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                "No se pudo conectar con /atenciones"
+            );
+
+        }
+
+
+        const atenciones =
+            await respuesta.json();
+
+
+        console.log(
+            "TODAS LAS ATENCIONES:",
+            atenciones
+        );
+
+
+
+        // ==========================================
+        // FECHA DE HOY
+        // ==========================================
+
+
+        const fecha =
+            new Date();
+
+
+        const año =
+            fecha.getFullYear();
+
+
+        const mes =
+            String(
+                fecha.getMonth() + 1
+            ).padStart(2, "0");
+
+
+        const dia =
+            String(
+                fecha.getDate()
+            ).padStart(2, "0");
+
+
+        const hoy =
+            año + "-" +
+            mes + "-" +
+            dia;
+
+
+
+        console.log(
+            "HOY:",
+            hoy
+        );
+
+
+
+        // ==========================================
+        // FILTRAR
+        // ==========================================
+
+
+        const misCortes =
+            atenciones.filter(
+                function(atencion) {
+
+
+                    if (
+                        !atencion.barbero
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const id =
+                        atencion.barbero.idBarbero;
+
+
+                    const fechaCorte =
+                        String(
+                            atencion.fecha
+                        ).substring(
+                            0,
+                            10
+                        );
+
+
+                    console.log(
+                        "ATENCION",
+                        atencion.idAtencion,
+                        "ID:",
+                        id,
+                        "FECHA:",
+                        fechaCorte
+                    );
+
+
+                    return (
+
+                        Number(id) ===
+                        Number(idBarbero)
+
+                        &&
+
+                        fechaCorte ===
+                        hoy
+
+                    );
+
+                }
+            );
+
+
+
+        console.log(
+            "MIS CORTES:",
+            misCortes
+        );
+
+
+
+        // ==========================================
+        // SI NO HAY CORTES
+        // ==========================================
+
+
+        if (
+            misCortes.length === 0
+        ) {
+
+
+            tabla.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="mensaje">
+
+                        No hay cortes
+                        registrados hoy.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            document.getElementById(
+                "cantidadCortes"
+            ).textContent = "0";
+
+
+            document.getElementById(
+                "totalGenerado"
+            ).textContent = "$0";
+
+
+            document.getElementById(
+                "miGanancia"
+            ).textContent = "$0";
+
+
+            return;
+
+        }
+
+
+
+        // ==========================================
+        // CALCULAR
+        // ==========================================
+
+
+        let total =
+            0;
+
+
+
+        // ==========================================
+        // MOSTRAR
+        // ==========================================
+
+
+        misCortes.forEach(
+            function(atencion) {
+
+
+                const precio =
+                    Number(
+                        atencion.precio || 0
+                    );
+
+
+                const ganancia =
+                    precio * 0.40;
+
+
+                total += precio;
+
+
+
+                // HORA
+
+                const hora =
+                    atencion.horaLlegada
+                    ? String(
+                        atencion.horaLlegada
+                    ).substring(0, 5)
+                    : "-";
+
+
+
+                // SERVICIO
+
+                const servicio =
+                    atencion.servicio &&
+                    atencion.servicio.nombre
+                    ? atencion.servicio.nombre
+                    : "Servicio";
+
+
+
+                // DESCRIPCIÓN
+
+                const descripcion =
+                    atencion.descripcion &&
+                    atencion.descripcion.trim()
+                    ? atencion.descripcion
+                    : "-";
+
+
+
+                // PAGO
+
+                const pago =
+                    atencion.formaPago
+                    || "-";
+
+
+
+                // CREAR FILA
+
+                const fila =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                fila.innerHTML = `
+
+                    <td>
+                        ${hora}
+                    </td>
+
+                    <td>
+                        ${servicio}
+                    </td>
+
+                    <td>
+                        ${descripcion}
+                    </td>
+
+                    <td>
+                        ${pago}
+                    </td>
+
+                    <td>
+                        ${dinero(precio)}
+                    </td>
+
+                    <td>
+                        ${dinero(ganancia)}
+                    </td>
+
+                `;
+
+
+                tabla.appendChild(
+                    fila
+                );
+
+            }
+        );
+
+
+
+        // ==========================================
+        // RESUMEN
+        // ==========================================
+
+
+        document.getElementById(
+            "cantidadCortes"
+        ).textContent =
+            misCortes.length;
+
+
+        document.getElementById(
+            "totalGenerado"
+        ).textContent =
+            dinero(total);
+
+
+        document.getElementById(
+            "miGanancia"
+        ).textContent =
+            dinero(
+                total * 0.40
+            );
+
+
+    }
+
+    catch(error) {
+
+
+        console.error(
+            "ERROR:",
+            error
+        );
+
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="mensaje">
+
+                    ❌ Error al cargar
+                    los cortes.
+
+                    <br><br>
+
+                    ${error.message}
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+// ==================================================
+// CERRAR SESIÓN
+// ==================================================
+
+
+function cerrarSesion() {
+
+
+    localStorage.removeItem(
+        "idBarbero"
+    );
+
+
+    localStorage.removeItem(
+        "nombreBarbero"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+
+// ==================================================
+// INICIAR
+// ==================================================
+
+
+cargarCortes();
+
+
+</script>
+
+
+</body>
+
+</html>

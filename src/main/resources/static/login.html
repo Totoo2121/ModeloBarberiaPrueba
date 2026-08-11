@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Lujan Barber Shop</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-family: Arial, sans-serif;
+
+            background: #111;
+            color: white;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 650px;
+
+            padding: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #999;
+            margin-bottom: 35px;
+        }
+
+        .usuarios {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .usuario {
+            background: #222;
+            border: 1px solid #333;
+
+            border-radius: 15px;
+
+            padding: 25px 10px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .usuario:hover {
+            background: #333;
+            transform: translateY(-3px);
+        }
+
+        .nombre {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .rol {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .jefe {
+            border: 1px solid #555;
+        }
+
+        .icono {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+
+            .usuarios {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>✂️ Lujan Barber Shop</h1>
+
+    <div class="subtitulo">
+        Seleccioná tu perfil
+    </div>
+
+
+    <div class="usuarios">
+
+        <!-- LEO -->
+
+        <div class="usuario"
+             onclick="entrar(1, 'Leo', false)">
+
+            <div class="icono">✂️</div>
+
+            <div class="nombre">
+                Leo
+            </div>
+
+            <div class="rol">
+                Barbero
+            </div>
+
+        </div>
+
+
+        <!-- TOMAS -->
+
+        <div class="usuario"
+             onclick="entrar(2, 'Tomas', false)">
+
+            <div class="icono">✂️</div>
+
+            <div class="nombre">
+                Tomas
+            </div>
+
+            <div class="rol">
+                Barbero
+            </div>
+
+        </div>
+
+
+        <!-- NICO -->
+
+        <div class="usuario"
+             onclick="entrar(3, 'Nico', false)">
+
+            <div class="icono">✂️</div>
+
+            <div class="nombre">
+                Nico
+            </div>
+
+            <div class="rol">
+                Barbero
+            </div>
+
+        </div>
+
+
+        <!-- JERE -->
+
+        <div class="usuario jefe"
+             onclick="entrar(4, 'Jere', true)">
+
+            <div class="icono">👑</div>
+
+            <div class="nombre">
+                Jere
+            </div>
+
+            <div class="rol">
+                Jefe
+            </div>
+
+        </div>
+
+
+        <!-- DANI -->
+
+        <div class="usuario jefe"
+             onclick="entrar(5, 'Dani', true)">
+
+            <div class="icono">👑</div>
+
+            <div class="nombre">
+                Dani
+            </div>
+
+            <div class="rol">
+                Jefe
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function entrar(id, nombre, esJefe) {
+
+        // Guardamos quién ingresó
+
+        localStorage.setItem(
+            "idBarbero",
+            id
+        );
+
+        localStorage.setItem(
+            "nombreBarbero",
+            nombre
+        );
+
+        localStorage.setItem(
+            "esJefe",
+            esJefe
+        );
+
+
+        // Si es jefe va al resumen general
+
+        if (esJefe) {
+
+            window.location.href =
+                "jefe.html";
+
+        } else {
+
+            // Si es barbero va a su pantalla
+
+            window.location.href =
+                "barbero.html";
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
