@@ -843,6 +843,19 @@
             </div>
 
 
+            <!-- SELECTOR DE FECHA BARBERO -->
+            <div style="text-align:center; margin-bottom:25px;">
+                <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
+                <input 
+                    type="date" 
+                    id="fechaSelectorBarbero" 
+                    style="width:auto; display:inline-block; padding:10px 15px;"
+                    onchange="cargarResumenBarberoConFecha()"
+                >
+                <button onclick="volverAHoyBarbero()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
+            </div>
+
+
             <div class="resumen">
 
                 <div class="tarjeta">
@@ -957,6 +970,19 @@
             </div>
 
 
+            <!-- SELECTOR DE FECHA -->
+            <div style="text-align:center; margin-bottom:25px;">
+                <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
+                <input 
+                    type="date" 
+                    id="fechaSelector" 
+                    style="width:auto; display:inline-block; padding:10px 15px;"
+                    onchange="cargarResumenJefeConFecha()"
+                >
+                <button onclick="volverAHoy()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
+            </div>
+
+
             <div class="resumen">
 
                 <div class="tarjeta">
@@ -1014,6 +1040,8 @@
                 <h2>
                     Detalle por barbero
                 </h2>
+
+                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px;">📊 EXPORTAR EXCEL</button>
 
             </div>
 
@@ -1747,39 +1775,45 @@
 
 
     /* ==============================
-       ES DE HOY
+       FECHA SELECCIONADA
     ============================== */
 
-    function esDeHoy(fecha) {
+    let fechaSeleccionada = null;
 
-        if (!fecha) {
-            return false;
+    function obtenerFechaFiltro() {
+        const selector = document.getElementById("fechaSelector");
+        if (selector && selector.value) {
+            return new Date(selector.value + "T12:00:00");
         }
+        return new Date();
+    }
 
-
-        const fechaCorte =
-            new Date(fecha);
-
-
-        const hoy =
-            new Date();
-
-
+    function coincideFecha(fecha) {
+        if (!fecha) return false;
+        const fechaCorte = new Date(fecha);
+        const filtro = obtenerFechaFiltro();
         return (
-            fechaCorte.getFullYear()
-                === hoy.getFullYear()
-
-            &&
-
-            fechaCorte.getMonth()
-                === hoy.getMonth()
-
-            &&
-
-            fechaCorte.getDate()
-                === hoy.getDate()
+            fechaCorte.getFullYear() === filtro.getFullYear()
+            && fechaCorte.getMonth() === filtro.getMonth()
+            && fechaCorte.getDate() === filtro.getDate()
         );
+    }
 
+    function esDeHoy(fecha) {
+        return coincideFecha(fecha);
+    }
+
+    function volverAHoy() {
+        const hoy = new Date();
+        const a = hoy.getFullYear();
+        const m = String(hoy.getMonth() + 1).padStart(2, '0');
+        const d = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById("fechaSelector").value = a + "-" + m + "-" + d;
+        cargarResumenJefe();
+    }
+
+    function cargarResumenJefeConFecha() {
+        cargarResumenJefe();
     }
 
 
@@ -1806,19 +1840,63 @@
             }
 
 
+            // Set barbero date selector to today if not set
+            const selectorBarbero = document.getElementById("fechaSelectorBarbero");
+            if (selectorBarbero && !selectorBarbero.value) {
+                const hoy = new Date();
+                const a = hoy.getFullYear();
+                const m = String(hoy.getMonth() + 1).padStart(2, '0');
+                const d = String(hoy.getDate()).padStart(2, '0');
+                selectorBarbero.value = a + "-" + m + "-" + d;
+            }
+
+            // Use barbero date selector if it has a value, otherwise use the jefe one
+            const selectorActivo = document.getElementById("fechaSelectorBarbero");
+            if (selectorActivo && selectorActivo.value) {
+                // Override the global fechaSeleccionada temporarily
+                const prevSel = fechaSeleccionada;
+                fechaSeleccionada = new Date(selectorActivo.value + "T12:00:00");
+                
+                // Update fecha display
+                const filtro = obtenerFechaFiltro();
+                const textoFecha = filtro.toLocaleDateString("es-AR", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+                document.getElementById("fechaResumen").textContent = textoFecha;
+                document.querySelector("#miResumen .titulo-seccion h2").textContent = "Cortes del " + filtro.toLocaleDateString("es-AR", {day:"numeric", month:"short", year:"numeric"});
+                
+                fechaSeleccionada = prevSel;
+            }
+
+            // Override coincideFecha temporarily for barbero view
+            const prevCoincide = coincideFecha;
+            const selectorB = document.getElementById("fechaSelectorBarbero");
+            
             const misCortes =
                 atenciones.filter(
                     function(atencion) {
 
+                        if (!atencion.barbero || atencion.barbero.idBarbero !== usuarioActual.id) {
+                            return false;
+                        }
+                        
+                        if (!atencion.fecha) return false;
+                        const fechaCorte = new Date(atencion.fecha);
+                        
+                        let filtroFecha;
+                        if (selectorB && selectorB.value) {
+                            filtroFecha = new Date(selectorB.value + "T12:00:00");
+                        } else {
+                            filtroFecha = new Date();
+                        }
+                        
                         return (
-                            atencion.barbero
-                            &&
-                            atencion.barbero.idBarbero
-                                === usuarioActual.id
-                            &&
-                            esDeHoy(
-                                atencion.fecha
-                            )
+                            fechaCorte.getFullYear() === filtroFecha.getFullYear()
+                            && fechaCorte.getMonth() === filtroFecha.getMonth()
+                            && fechaCorte.getDate() === filtroFecha.getDate()
                         );
 
                     }
@@ -1890,7 +1968,7 @@
                             colspan="7"
                             style="text-align:center; padding:30px;"
                         >
-                            No hay cortes registrados hoy.
+                            No hay cortes registrados en esta fecha.
                         </td>
                     </tr>
                 `;
@@ -2200,6 +2278,16 @@
 
         try {
 
+            // Set date selector to today if not set
+            const selector = document.getElementById("fechaSelector");
+            if (selector && !selector.value) {
+                const hoy = new Date();
+                const a = hoy.getFullYear();
+                const m = String(hoy.getMonth() + 1).padStart(2, '0');
+                const d = String(hoy.getDate()).padStart(2, '0');
+                selector.value = a + "-" + m + "-" + d;
+            }
+
             await cargarAtenciones();
 
             // Cargar todos los barberos desde la API
@@ -2215,13 +2303,22 @@
                 atenciones.filter(
                     function(atencion) {
 
-                        return esDeHoy(
+                        return coincideFecha(
                             atencion.fecha
                         );
 
                     }
                 );
 
+            // Update date display
+            const filtro = obtenerFechaFiltro();
+            const textoFecha = filtro.toLocaleDateString("es-AR", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+            document.getElementById("fechaJefe").textContent = textoFecha;
 
             let facturacion = 0;
             let totalComisiones = 0;
@@ -2413,7 +2510,7 @@
                 function(atencion) {
 
                     return (
-                        esDeHoy(
+                        coincideFecha(
                             atencion.fecha
                         )
                         &&
@@ -2467,7 +2564,7 @@
                         colspan="7"
                         style="text-align:center; padding:30px;"
                     >
-                        Este barbero no tiene cortes hoy.
+                        Este barbero no tiene cortes en esta fecha.
                     </td>
 
                 </tr>
@@ -2517,6 +2614,267 @@
 
 
     /* ==============================
+       VOLVER A HOY BARBERO
+    ============================== */
+
+    function volverAHoyBarbero() {
+        const hoy = new Date();
+        const a = hoy.getFullYear();
+        const m = String(hoy.getMonth() + 1).padStart(2, '0');
+        const d = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById("fechaSelectorBarbero").value = a + "-" + m + "-" + d;
+        // Temporarily override fechaSeleccionada for barbero view
+        fechaSeleccionada = null;
+        cargarResumenBarbero();
+    }
+
+    function cargarResumenBarberoConFecha() {
+        cargarResumenBarbero();
+    }
+
+    /* ==============================
+       EXPORTAR A EXCEL
+    ============================== */
+
+    function exportarExcel() {
+
+        const filtro = obtenerFechaFiltro();
+        const fechaTexto = filtro.toLocaleDateString("es-AR", {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        const fechaArchivo = filtro.toISOString().split('T')[0];
+
+        // Get barberos data
+        fetch("/barberos")
+            .then(r => r.json())
+            .then(barberosData => {
+                
+                // Get atenciones
+                fetch("/atenciones")
+                    .then(r => r.json())
+                    .then(atencionesData => {
+                        
+                        const cortesDia = atencionesData.filter(function(a) {
+                            return coincideFecha(a.fecha);
+                        });
+
+                        // Ordenar por hora
+                        cortesDia.sort(function(a, b) {
+                            var horaA = a.horaLlegada || "00:00";
+                            var horaB = b.horaLlegada || "00:00";
+                            return horaA.localeCompare(horaB);
+                        });
+
+                        // Create barbero map
+                        const barberosMap = {};
+                        barberosData.forEach(b => {
+                            barberosMap[b.idBarbero] = b;
+                        });
+
+                        // Calcular totales generales
+                        let totalFacturado = 0;
+                        let totalComisiones = 0;
+                        let totalEfectivo = 0;
+                        let totalTransferencia = 0;
+                        
+                        cortesDia.forEach(function(a) {
+                            var precio = Number(a.precio || 0);
+                            totalFacturado += precio;
+                            
+                            var pct = a.barbero && a.barbero.porcentajeComision 
+                                ? a.barbero.porcentajeComision 
+                                : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
+                            totalComisiones += (precio * pct);
+                            
+                            if (a.formaPago === "EFECTIVO") {
+                                totalEfectivo += precio;
+                            } else if (a.formaPago === "TRANSFERENCIA") {
+                                totalTransferencia += precio;
+                            }
+                        });
+                        
+                        let totalBarberia = totalFacturado - totalComisiones;
+
+                        // Build HTML con formato para Excel
+                        let html = "";
+                        
+                        // BOM UTF-8 para que Excel lea bien los acentos
+                        html += "\uFEFF";
+                        
+                        // Estilos CSS
+                        html += "<html><head><meta charset='UTF-8'>";
+                        html += "<style>";
+                        html += "table { border-collapse: collapse; width: 100%; }";
+                        html += "th, td { border: 1px solid #000000; padding: 8px; text-align: left; }";
+                        html += "th { background-color: #D3D3D3; font-weight: bold; }";
+                        html += ".titulo { background-color: #2F4F4F; color: white; font-size: 16px; font-weight: bold; text-align: center; }";
+                        html += ".subtitulo { background-color: #4682B4; color: white; font-weight: bold; }";
+                        html += ".total { background-color: #FFFF00; font-weight: bold; }";
+                        html += ".jefe { background-color: #FFD700; }";
+                        html += "</style></head><body>";
+                        
+                        // ENCABEZADO
+                        html += "<table>";
+                        html += "<tr><td colspan='9' class='titulo'>LUJAN BARBER SHOP</td></tr>";
+                        html += "<tr><td colspan='9' style='text-align:center; font-size:14px;'>Reporte de Cortes</td></tr>";
+                        html += "<tr><td colspan='2'><b>Fecha:</b></td><td colspan='7'>" + fechaTexto + "</td></tr>";
+                        html += "<tr><td colspan='2'><b>Generado:</b></td><td colspan='7'>" + new Date().toLocaleString("es-AR") + "</td></tr>";
+                        html += "</table>";
+                        html += "<br>";
+                        
+                        // RESUMEN GENERAL
+                        html += "<table>";
+                        html += "<tr><td colspan='4' class='subtitulo'>RESUMEN GENERAL</td></tr>";
+                        html += "<tr><td colspan='2'><b>Total de Cortes:</b></td><td colspan='2'>" + cortesDia.length + "</td></tr>";
+                        html += "<tr><td colspan='2'><b>Total Facturado:</b></td><td colspan='2'>$" + totalFacturado.toLocaleString("es-AR") + "</td></tr>";
+                        html += "<tr><td colspan='2'><b>Comisiones Barberos:</b></td><td colspan='2'>$" + totalComisiones.toLocaleString("es-AR") + "</td></tr>";
+                        html += "<tr class='total'><td colspan='2'><b>Ganancia Barbería:</b></td><td colspan='2'>$" + totalBarberia.toLocaleString("es-AR") + "</td></tr>";
+                        html += "</table>";
+                        html += "<br>";
+                        
+                        // FORMAS DE PAGO
+                        html += "<table>";
+                        html += "<tr><td colspan='4' class='subtitulo'>FORMAS DE PAGO</td></tr>";
+                        html += "<tr><td colspan='2'><b>Efectivo:</b></td><td colspan='2'>$" + totalEfectivo.toLocaleString("es-AR") + "</td></tr>";
+                        html += "<tr><td colspan='2'><b>Transferencia:</b></td><td colspan='2'>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
+                        html += "</table>";
+                        html += "<br><br>";
+
+                        // DETALLE DE CORTES
+                        html += "<table>";
+                        html += "<tr><td colspan='9' class='subtitulo'>DETALLE DE CORTES</td></tr>";
+                        html += "<tr><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Descripción</th><th>Forma de Pago</th><th>Nombre Transferencia</th><th>Precio</th><th>Porcentaje</th><th>Comisión</th></tr>";
+
+                        cortesDia.forEach(function(a) {
+                            const barbero = a.barbero ? (a.barbero.nombre || "-") : "-";
+                            const servicio = a.servicio ? (a.servicio.nombre || "-") : "-";
+                            const descripcion = a.descripcion || "-";
+                            const formaPago = a.formaPago || "-";
+                            const nombreTrans = a.nombreTransferencia || "-";
+                            const precio = Number(a.precio || 0);
+                            
+                            const pct = a.barbero && a.barbero.porcentajeComision 
+                                ? a.barbero.porcentajeComision 
+                                : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
+                            
+                            const comision = precio * pct;
+                            const hora = a.horaLlegada || "-";
+                            const esJefeRow = a.barbero && a.barbero.esJefe ? "class='jefe'" : "";
+
+                            html += "<tr " + esJefeRow + ">";
+                            html += "<td>" + hora + "</td>";
+                            html += "<td>" + barbero + "</td>";
+                            html += "<td>" + servicio + "</td>";
+                            html += "<td>" + descripcion + "</td>";
+                            html += "<td>" + formaPago + "</td>";
+                            html += "<td>" + nombreTrans + "</td>";
+                            html += "<td>$" + precio.toLocaleString("es-AR") + "</td>";
+                            html += "<td>" + Math.round(pct * 100) + "%</td>";
+                            html += "<td>$" + comision.toLocaleString("es-AR") + "</td>";
+                            html += "</tr>";
+                        });
+
+                        html += "</table>";
+                        html += "<br><br>";
+
+                        // RESUMEN POR BARBERO
+                        html += "<table>";
+                        html += "<tr><td colspan='6' class='subtitulo'>RESUMEN POR BARBERO</td></tr>";
+                        html += "<tr><th>Barbero</th><th>Rol</th><th>Cortes</th><th>Total Facturado</th><th>Porcentaje</th><th>Ganancia/Comisión</th></tr>";
+                        
+                        const totals = {};
+                        cortesDia.forEach(function(a) {
+                            const id = a.barbero ? a.barbero.idBarbero : 0;
+                            if (!totals[id]) {
+                                totals[id] = {
+                                    nombre: a.barbero ? a.barbero.nombre : "?",
+                                    esJefe: a.barbero ? a.barbero.esJefe : false,
+                                    porcentaje: a.barbero && a.barbero.porcentajeComision 
+                                        ? a.barbero.porcentajeComision 
+                                        : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40),
+                                    cortes: 0,
+                                    total: 0,
+                                    comision: 0
+                                };
+                            }
+                            totals[id].cortes++;
+                            const precio = Number(a.precio || 0);
+                            totals[id].total += precio;
+                            totals[id].comision += precio * totals[id].porcentaje;
+                        });
+
+                        // Ordenar por nombre
+                        const barberosOrdenados = Object.keys(totals).map(function(id) {
+                            return totals[id];
+                        });
+                        barberosOrdenados.sort(function(a, b) {
+                            return a.nombre.localeCompare(b.nombre);
+                        });
+
+                        barberosOrdenados.forEach(function(t) {
+                            const rol = t.esJefe ? "Jefe" : "Barbero";
+                            const claseJefe = t.esJefe ? "class='jefe'" : "";
+                            html += "<tr " + claseJefe + ">";
+                            html += "<td>" + t.nombre + "</td>";
+                            html += "<td>" + rol + "</td>";
+                            html += "<td>" + t.cortes + "</td>";
+                            html += "<td>$" + t.total.toLocaleString("es-AR") + "</td>";
+                            html += "<td>" + Math.round(t.porcentaje * 100) + "%</td>";
+                            html += "<td>$" + t.comision.toLocaleString("es-AR") + "</td>";
+                            html += "</tr>";
+                        });
+
+                        html += "</table>";
+                        html += "<br><br>";
+
+                        // TRANSFERENCIAS DETALLADAS
+                        const transferencias = cortesDia.filter(function(a) {
+                            return a.formaPago === "TRANSFERENCIA";
+                        });
+
+                        if (transferencias.length > 0) {
+                            html += "<table>";
+                            html += "<tr><td colspan='4' class='subtitulo'>DETALLE DE TRANSFERENCIAS</td></tr>";
+                            html += "<tr><th>Hora</th><th>Barbero</th><th>Nombre Transferencia</th><th>Monto</th></tr>";
+                            
+                            transferencias.forEach(function(a) {
+                                const hora = a.horaLlegada || "-";
+                                const barbero = a.barbero ? a.barbero.nombre : "-";
+                                const nombre = a.nombreTransferencia || "-";
+                                const precio = Number(a.precio || 0);
+                                
+                                html += "<tr>";
+                                html += "<td>" + hora + "</td>";
+                                html += "<td>" + barbero + "</td>";
+                                html += "<td>" + nombre + "</td>";
+                                html += "<td>$" + precio.toLocaleString("es-AR") + "</td>";
+                                html += "</tr>";
+                            });
+                            
+                            html += "<tr class='total'><td colspan='3'><b>Total Transferencias:</b></td><td>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
+                            html += "</table>";
+                        }
+                        
+                        html += "</body></html>";
+
+                        // Download como .xls (Excel lo abre perfecto)
+                        const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = "Reporte_Barberia_" + fechaArchivo + ".xls";
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    });
+            });
+
+    }
+
+    /* ==============================
        INICIO
     ============================== */
 
@@ -2524,7 +2882,7 @@
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a29ba2d70f0fb522',t:'MTc4NjQ5NzQwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a29c513c0bb4e9ae',t:'MTc4NjUwNDU0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
