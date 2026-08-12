@@ -2,7 +2,7 @@ package LujanBarberShop;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.time.ZoneId;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,7 +57,7 @@ public class AtencionController {
 
         Atencion atencion = new Atencion();
 
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.now(java.time.ZoneId.of("America/Argentina/Buenos_Aires"));
 
         atencion.setBarbero(barbero);
         atencion.setServicio(servicio);
