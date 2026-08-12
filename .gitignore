@@ -1,2 +1,8 @@
 target/
-src/main/resources/application.properties
+*.class
+*.jar
+*.war
+*.ear
+.idea/
+*.iml
+*.log
