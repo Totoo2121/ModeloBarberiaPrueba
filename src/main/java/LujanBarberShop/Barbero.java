@@ -17,6 +17,9 @@ public class Barbero {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "es_jefe", nullable = false)
+    private Boolean esJefe = false;
+
     public Barbero() {
     }
 
@@ -43,4 +46,23 @@ public class Barbero {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
+
+    public Boolean getEsJefe() {
+        return esJefe;
+    }
+
+    public void setEsJefe(Boolean esJefe) {
+        this.esJefe = esJefe;
+    }
+
+@Column(name = "porcentaje_comision", nullable = false)
+private Double porcentajeComision = 0.40;
+
+public Double getPorcentajeComision() {
+    return porcentajeComision;
+}
+
+public void setPorcentajeComision(Double porcentajeComision) {
+    this.porcentajeComision = porcentajeComision;
+}
 }

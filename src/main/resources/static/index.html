@@ -677,6 +677,10 @@
                 + AGREGAR CORTE
             </button>
 
+            <button onclick="mostrarSeccion('miResumen')">
+                MIS CORTES
+            </button>
+
             <button
                 class="boton-secundario"
                 onclick="cerrarSesion()"
@@ -828,7 +832,7 @@
             <div class="encabezado">
 
                 <h2>
-                    Mi resumen
+                    <span id="tituloMiResumen">Mi resumen</span>
                 </h2>
 
                 <div
@@ -1081,6 +1085,7 @@
     let servicios = [];
 
     const PORCENTAJE_BARBERO = 0.40;
+    const PORCENTAJE_JEFE = 1.00;
 
 
     /* ==============================
@@ -1788,6 +1793,18 @@
 
             await cargarAtenciones();
 
+            // Obtener el porcentaje del barbero desde la API
+            let porcentajeUsuario = PORCENTAJE_BARBERO;
+            try {
+                const respuestaBarbero = await fetch("/barberos/" + usuarioActual.id);
+                if (respuestaBarbero.ok) {
+                    const datosBarbero = await respuestaBarbero.json();
+                    porcentajeUsuario = datosBarbero.porcentajeComision || (esJefe ? 1.00 : 0.40);
+                }
+            } catch (e) {
+                porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
+            }
+
 
             const misCortes =
                 atenciones.filter(
@@ -1823,9 +1840,17 @@
             );
 
 
-            const ganancia =
-                total *
-                PORCENTAJE_BARBERO;
+            const ganancia = total * porcentajeUsuario;
+
+            // Actualizar el label según el porcentaje
+            const porcentajeTexto = Math.round(porcentajeUsuario * 100);
+            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = 
+                "Mi " + porcentajeTexto + "%";
+            
+            // Actualizar el título según si es jefe o barbero
+            if (esJefe) {
+                document.getElementById("tituloMiResumen").textContent = "Mis cortes";
+            }
 
 
             document.getElementById(
@@ -1922,11 +1947,12 @@
             );
 
 
-        const ganancia =
-            Number(
-                atencion.precio || 0
-            ) *
-            PORCENTAJE_BARBERO;
+        const precio = Number(atencion.precio || 0);
+        // Usar el porcentaje del barbero desde la API
+        const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
+            ? atencion.barbero.porcentajeComision 
+            : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+        const ganancia = precio * porcentaje;
 
 
         const hora =
@@ -2176,6 +2202,14 @@
 
             await cargarAtenciones();
 
+            // Cargar todos los barberos desde la API
+            const respuestaBarberos = await fetch("/barberos");
+            const barberosData = await respuestaBarberos.json();
+            const barberosMap = {};
+            barberosData.forEach(b => {
+                barberosMap[b.idBarbero] = b;
+            });
+
 
             const cortesHoy =
                 atenciones.filter(
@@ -2190,15 +2224,25 @@
 
 
             let facturacion = 0;
+            let totalComisiones = 0;
+            let gananciaBarberia = 0;
 
 
             cortesHoy.forEach(
                 function(atencion) {
 
-                    facturacion +=
-                        Number(
-                            atencion.precio || 0
-                        );
+                    const precio = Number(atencion.precio || 0);
+                    facturacion += precio;
+
+                    const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
+                        ? atencion.barbero.porcentajeComision 
+                        : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+
+                    const comision = precio * porcentaje;
+                    totalComisiones += comision;
+                    
+                    // Lo que queda para la barbería
+                    gananciaBarberia += (precio - comision);
 
                 }
             );
@@ -2221,10 +2265,7 @@
             document.getElementById(
                 "gananciaBarberosJefe"
             ).textContent =
-                dinero(
-                    facturacion *
-                    PORCENTAJE_BARBERO
-                );
+                dinero(totalComisiones);
 
 
             const lista =
@@ -2236,19 +2277,17 @@
             lista.innerHTML = "";
 
 
-            const barberos = {
-
-                1: "Leo",
-                2: "Tomas",
-                3: "Nico"
-
-            };
-
-
             Object.keys(
-                barberos
+                barberosMap
             ).forEach(
                 function(id) {
+
+                    const barbero = barberosMap[id];
+                    if (!barbero.activo) return;
+
+                    const porcentajeBarbero = barbero.porcentajeComision || 0.40;
+                    const esJefeBarbero = barbero.esJefe === true;
+                    const icono = esJefeBarbero ? "👑" : "✂";
 
                     const cortes =
                         cortesHoy.filter(
@@ -2286,8 +2325,10 @@
 
 
                     const ganancia =
-                        total *
-                        PORCENTAJE_BARBERO;
+                        total * porcentajeBarbero;
+
+                    const porcentajeTexto = Math.round(porcentajeBarbero * 100);
+                    const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
 
 
                     const card =
@@ -2307,7 +2348,7 @@
                             <div>
 
                                 <h3>
-                                    ✂ ${barberos[id]}
+                                    ${icono} ${barbero.nombre}
                                 </h3>
 
                                 <div class="barbero-info">
@@ -2318,7 +2359,7 @@
                                     Facturación:
                                     ${dinero(total)}
                                     ·
-                                    Comisión:
+                                    ${etiquetaComision} (${porcentajeTexto}%):
                                     ${dinero(ganancia)}
 
                                 </div>
@@ -2330,7 +2371,7 @@
                                 class="boton-detalle"
                                 onclick="verDetalleBarbero(
                                     ${id},
-                                    '${barberos[id]}'
+                                    '${barbero.nombre}'
                                 )"
                             >
                                 VER DETALLE
@@ -2483,7 +2524,7 @@
 
 </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a29ba2d70f0fb522',t:'MTc4NjQ5NzQwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
