@@ -9,6 +9,8 @@ RUN ./mvnw clean package -DskipTests -B
 
 FROM eclipse-temurin:22-jre
 
+ENV TZ=America/Argentina/Buenos_Aires
+
 WORKDIR /app
 
 COPY --from=builder /app/target/*.jar app.jar

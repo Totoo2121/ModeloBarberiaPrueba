@@ -57,7 +57,7 @@ public class AtencionController {
 
         Atencion atencion = new Atencion();
 
-        LocalDateTime ahora = LocalDateTime.now(java.time.ZoneOffset.ofHours(-3));
+        LocalDateTime ahora = LocalDateTime.now();
         atencion.setBarbero(barbero);
         atencion.setServicio(servicio);
 
