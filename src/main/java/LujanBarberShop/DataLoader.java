@@ -17,9 +17,12 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        if (barberoRepository.count() == 0) {
+        System.out.println("==========================================");
+        System.out.println(">>> DataLoader ejecutándose...");
+        System.out.println(">>> Barberos existentes: " + barberoRepository.count());
+        System.out.println(">>> Servicios existentes: " + servicioRepository.count());
 
-            // Crear barberos
+        if (barberoRepository.count() == 0) {
             Barbero leo = new Barbero();
             leo.setNombre("Leo");
             leo.setActivo(true);
@@ -55,20 +58,26 @@ public class DataLoader implements CommandLineRunner {
             dani.setPorcentajeComision(1.00);
             barberoRepository.save(dani);
 
-            // Crear servicios básicos
-            Servicio corte = new Servicio();
-            corte.setNombre("Corte");
-            corte.setPrecio(12000.0);
-            corte.setActivo(true);
-            servicioRepository.save(corte);
-
-            Servicio corteCejas = new Servicio();
-            corteCejas.setNombre("Corte + Cejas");
-            corteCejas.setPrecio(13000.0);
-            corteCejas.setActivo(true);
-            servicioRepository.save(corteCejas);
-
-            System.out.println("✅ Datos iniciales creados correctamente");
+            System.out.println(">>> ✅ 5 barberos creados");
         }
+
+        if (servicioRepository.count() == 0) {
+            Servicio s1 = new Servicio();
+            s1.setNombre("Corte");
+            s1.setPrecio(12000.0);
+            s1.setActivo(true);
+            servicioRepository.save(s1);
+
+            Servicio s2 = new Servicio();
+            s2.setNombre("Corte + Cejas");
+            s2.setPrecio(13000.0);
+            s2.setActivo(true);
+            servicioRepository.save(s2);
+
+            System.out.println(">>> ✅ 2 servicios creados");
+        }
+
+        System.out.println(">>> TOTAL: " + barberoRepository.count() + " barberos, " + servicioRepository.count() + " servicios");
+        System.out.println("==========================================");
     }
 }
