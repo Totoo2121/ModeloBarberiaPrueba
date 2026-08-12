@@ -57,7 +57,7 @@ public class AtencionController {
 
         Atencion atencion = new Atencion();
 
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
         atencion.setBarbero(barbero);
         atencion.setServicio(servicio);
 
