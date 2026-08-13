@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <title>Lujan Barber Shop</title>
 
@@ -2645,241 +2646,126 @@
         
         const fechaArchivo = filtro.toISOString().split('T')[0];
 
-        // Get barberos data
-        fetch("/barberos")
-            .then(r => r.json())
-            .then(barberosData => {
+        fetch("/barberos").then(r => r.json()).then(barberosData => {
+            fetch("/atenciones").then(r => r.json()).then(atencionesData => {
+
+                const cortesDia = atencionesData.filter(function(a) {
+                    return coincideFecha(a.fecha);
+                });
+
+                // Ordenar por hora
+                cortesDia.sort(function(a, b) {
+                    var horaA = a.horaLlegada || "00:00";
+                    var horaB = b.horaLlegada || "00:00";
+                    return horaA.localeCompare(horaB);
+                });
+
+                // Calcular totales
+                let totalFacturado = 0;
+                let totalComisiones = 0;
+                let totalEfectivo = 0;
+                let totalTransferencia = 0;
+
+                cortesDia.forEach(function(a) {
+                    var precio = Number(a.precio || 0);
+                    totalFacturado += precio;
+                    var pct = a.barbero && a.barbero.porcentajeComision
+                        ? a.barbero.porcentajeComision
+                        : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
+                    totalComisiones += (precio * pct);
+                    if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
+                    else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
+                });
+
+                let totalBarberia = totalFacturado - totalComisiones;
+
+                // Crear libro de Excel
+                var wb = XLSX.utils.book_new();
+
+                // Hoja 1: Resumen General
+                var resumenData = [
+                    ["LUJAN BARBER SHOP"],
+                    ["Reporte de Cortes"],
+                    ["Fecha:", fechaTexto],
+                    ["Generado:", new Date().toLocaleString("es-AR")],
+                    [],
+                    ["RESUMEN GENERAL"],
+                    ["Total de Cortes:", cortesDia.length],
+                    ["Total Facturado:", "$" + totalFacturado.toLocaleString("es-AR")],
+                    ["Comisiones Barberos:", "$" + totalComisiones.toLocaleString("es-AR")],
+                    ["Ganancia Barbería:", "$" + totalBarberia.toLocaleString("es-AR")],
+                    [],
+                    ["FORMAS DE PAGO"],
+                    ["Efectivo:", "$" + totalEfectivo.toLocaleString("es-AR")],
+                    ["Transferencia:", "$" + totalTransferencia.toLocaleString("es-AR")]
+                ];
+                var ws1 = XLSX.utils.aoa_to_sheet(resumenData);
+                XLSX.utils.book_append_sheet(wb, ws1, "Resumen");
+
+                // Hoja 2: Detalle de Cortes
+                var detalleData = [["Hora", "Barbero", "Servicio", "Descripción", "Forma de Pago", "Nombre Transferencia", "Precio", "Porcentaje", "Comisión"]];
                 
-                // Get atenciones
-                fetch("/atenciones")
-                    .then(r => r.json())
-                    .then(atencionesData => {
-                        
-                        const cortesDia = atencionesData.filter(function(a) {
-                            return coincideFecha(a.fecha);
-                        });
+                cortesDia.forEach(function(a) {
+                    const barbero = a.barbero ? a.barbero.nombre : "-";
+                    const servicio = a.servicio ? a.servicio.nombre : "-";
+                    const descripcion = a.descripcion || "-";
+                    const formaPago = a.formaPago || "-";
+                    const nombreTrans = a.nombreTransferencia || "-";
+                    const precio = Number(a.precio || 0);
+                    const pct = a.barbero && a.barbero.porcentajeComision
+                        ? a.barbero.porcentajeComision : 0.40;
+                    const comision = precio * pct;
+                    const hora = a.horaLlegada || "-";
 
-                        // Ordenar por hora
-                        cortesDia.sort(function(a, b) {
-                            var horaA = a.horaLlegada || "00:00";
-                            var horaB = b.horaLlegada || "00:00";
-                            return horaA.localeCompare(horaB);
-                        });
+                    detalleData.push([hora, barbero, servicio, descripcion, formaPago, nombreTrans, precio, Math.round(pct * 100) + "%", comision]);
+                });
 
-                        // Create barbero map
-                        const barberosMap = {};
-                        barberosData.forEach(b => {
-                            barberosMap[b.idBarbero] = b;
-                        });
+                var ws2 = XLSX.utils.aoa_to_sheet(detalleData);
+                XLSX.utils.book_append_sheet(wb, ws2, "Detalle Cortes");
 
-                        // Calcular totales generales
-                        let totalFacturado = 0;
-                        let totalComisiones = 0;
-                        let totalEfectivo = 0;
-                        let totalTransferencia = 0;
-                        
-                        cortesDia.forEach(function(a) {
-                            var precio = Number(a.precio || 0);
-                            totalFacturado += precio;
-                            
-                            var pct = a.barbero && a.barbero.porcentajeComision 
-                                ? a.barbero.porcentajeComision 
-                                : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
-                            totalComisiones += (precio * pct);
-                            
-                            if (a.formaPago === "EFECTIVO") {
-                                totalEfectivo += precio;
-                            } else if (a.formaPago === "TRANSFERENCIA") {
-                                totalTransferencia += precio;
-                            }
-                        });
-                        
-                        let totalBarberia = totalFacturado - totalComisiones;
+                // Hoja 3: Resumen por Barbero
+                const totals = {};
+                cortesDia.forEach(function(a) {
+                    const id = a.barbero ? a.barbero.idBarbero : 0;
+                    if (!totals[id]) {
+                        totals[id] = {
+                            nombre: a.barbero ? a.barbero.nombre : "?",
+                            esJefe: a.barbero ? a.barbero.esJefe : false,
+                            porcentaje: a.barbero && a.barbero.porcentajeComision
+                                ? a.barbero.porcentajeComision : 0.40,
+                            cortes: 0, total: 0, comision: 0
+                        };
+                    }
+                    totals[id].cortes++;
+                    const precio = Number(a.precio || 0);
+                    totals[id].total += precio;
+                    totals[id].comision += precio * totals[id].porcentaje;
+                });
 
-                        // Build HTML con formato para Excel
-                        let html = "";
-                        
-                        // BOM UTF-8 para que Excel lea bien los acentos
-                        html += "\uFEFF";
-                        
-                        // Estilos CSS
-                        html += "<html><head><meta charset='UTF-8'>";
-                        html += "<style>";
-                        html += "table { border-collapse: collapse; width: 100%; }";
-                        html += "th, td { border: 1px solid #000000; padding: 8px; text-align: left; }";
-                        html += "th { background-color: #D3D3D3; font-weight: bold; }";
-                        html += ".titulo { background-color: #2F4F4F; color: white; font-size: 16px; font-weight: bold; text-align: center; }";
-                        html += ".subtitulo { background-color: #4682B4; color: white; font-weight: bold; }";
-                        html += ".total { background-color: #FFFF00; font-weight: bold; }";
-                        html += ".jefe { background-color: #FFD700; }";
-                        html += "</style></head><body>";
-                        
-                        // ENCABEZADO
-                        html += "<table>";
-                        html += "<tr><td colspan='9' class='titulo'>LUJAN BARBER SHOP</td></tr>";
-                        html += "<tr><td colspan='9' style='text-align:center; font-size:14px;'>Reporte de Cortes</td></tr>";
-                        html += "<tr><td colspan='2'><b>Fecha:</b></td><td colspan='7'>" + fechaTexto + "</td></tr>";
-                        html += "<tr><td colspan='2'><b>Generado:</b></td><td colspan='7'>" + new Date().toLocaleString("es-AR") + "</td></tr>";
-                        html += "</table>";
-                        html += "<br>";
-                        
-                        // RESUMEN GENERAL
-                        html += "<table>";
-                        html += "<tr><td colspan='4' class='subtitulo'>RESUMEN GENERAL</td></tr>";
-                        html += "<tr><td colspan='2'><b>Total de Cortes:</b></td><td colspan='2'>" + cortesDia.length + "</td></tr>";
-                        html += "<tr><td colspan='2'><b>Total Facturado:</b></td><td colspan='2'>$" + totalFacturado.toLocaleString("es-AR") + "</td></tr>";
-                        html += "<tr><td colspan='2'><b>Comisiones Barberos:</b></td><td colspan='2'>$" + totalComisiones.toLocaleString("es-AR") + "</td></tr>";
-                        html += "<tr class='total'><td colspan='2'><b>Ganancia Barbería:</b></td><td colspan='2'>$" + totalBarberia.toLocaleString("es-AR") + "</td></tr>";
-                        html += "</table>";
-                        html += "<br>";
-                        
-                        // FORMAS DE PAGO
-                        html += "<table>";
-                        html += "<tr><td colspan='4' class='subtitulo'>FORMAS DE PAGO</td></tr>";
-                        html += "<tr><td colspan='2'><b>Efectivo:</b></td><td colspan='2'>$" + totalEfectivo.toLocaleString("es-AR") + "</td></tr>";
-                        html += "<tr><td colspan='2'><b>Transferencia:</b></td><td colspan='2'>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
-                        html += "</table>";
-                        html += "<br><br>";
+                var barberoData = [["Barbero", "Rol", "Cortes", "Total Facturado", "Porcentaje", "Ganancia/Comisión"]];
+                
+                Object.keys(totals).sort(function(a, b) {
+                    return totals[a].nombre.localeCompare(totals[b].nombre);
+                }).forEach(function(id) {
+                    const t = totals[id];
+                    const rol = t.esJefe ? "Jefe" : "Barbero";
+                    barberoData.push([t.nombre, rol, t.cortes, t.total, Math.round(t.porcentaje * 100) + "%", t.comision]);
+                });
 
-                        // DETALLE DE CORTES
-                        html += "<table>";
-                        html += "<tr><td colspan='9' class='subtitulo'>DETALLE DE CORTES</td></tr>";
-                        html += "<tr><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Descripción</th><th>Forma de Pago</th><th>Nombre Transferencia</th><th>Precio</th><th>Porcentaje</th><th>Comisión</th></tr>";
+                var ws3 = XLSX.utils.aoa_to_sheet(barberoData);
+                XLSX.utils.book_append_sheet(wb, ws3, "Por Barbero");
 
-                        cortesDia.forEach(function(a) {
-                            const barbero = a.barbero ? (a.barbero.nombre || "-") : "-";
-                            const servicio = a.servicio ? (a.servicio.nombre || "-") : "-";
-                            const descripcion = a.descripcion || "-";
-                            const formaPago = a.formaPago || "-";
-                            const nombreTrans = a.nombreTransferencia || "-";
-                            const precio = Number(a.precio || 0);
-                            
-                            const pct = a.barbero && a.barbero.porcentajeComision 
-                                ? a.barbero.porcentajeComision 
-                                : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
-                            
-                            const comision = precio * pct;
-                            const hora = a.horaLlegada || "-";
-                            const esJefeRow = a.barbero && a.barbero.esJefe ? "class='jefe'" : "";
-
-                            html += "<tr " + esJefeRow + ">";
-                            html += "<td>" + hora + "</td>";
-                            html += "<td>" + barbero + "</td>";
-                            html += "<td>" + servicio + "</td>";
-                            html += "<td>" + descripcion + "</td>";
-                            html += "<td>" + formaPago + "</td>";
-                            html += "<td>" + nombreTrans + "</td>";
-                            html += "<td>$" + precio.toLocaleString("es-AR") + "</td>";
-                            html += "<td>" + Math.round(pct * 100) + "%</td>";
-                            html += "<td>$" + comision.toLocaleString("es-AR") + "</td>";
-                            html += "</tr>";
-                        });
-
-                        html += "</table>";
-                        html += "<br><br>";
-
-                        // RESUMEN POR BARBERO
-                        html += "<table>";
-                        html += "<tr><td colspan='6' class='subtitulo'>RESUMEN POR BARBERO</td></tr>";
-                        html += "<tr><th>Barbero</th><th>Rol</th><th>Cortes</th><th>Total Facturado</th><th>Porcentaje</th><th>Ganancia/Comisión</th></tr>";
-                        
-                        const totals = {};
-                        cortesDia.forEach(function(a) {
-                            const id = a.barbero ? a.barbero.idBarbero : 0;
-                            if (!totals[id]) {
-                                totals[id] = {
-                                    nombre: a.barbero ? a.barbero.nombre : "?",
-                                    esJefe: a.barbero ? a.barbero.esJefe : false,
-                                    porcentaje: a.barbero && a.barbero.porcentajeComision 
-                                        ? a.barbero.porcentajeComision 
-                                        : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40),
-                                    cortes: 0,
-                                    total: 0,
-                                    comision: 0
-                                };
-                            }
-                            totals[id].cortes++;
-                            const precio = Number(a.precio || 0);
-                            totals[id].total += precio;
-                            totals[id].comision += precio * totals[id].porcentaje;
-                        });
-
-                        // Ordenar por nombre
-                        const barberosOrdenados = Object.keys(totals).map(function(id) {
-                            return totals[id];
-                        });
-                        barberosOrdenados.sort(function(a, b) {
-                            return a.nombre.localeCompare(b.nombre);
-                        });
-
-                        barberosOrdenados.forEach(function(t) {
-                            const rol = t.esJefe ? "Jefe" : "Barbero";
-                            const claseJefe = t.esJefe ? "class='jefe'" : "";
-                            html += "<tr " + claseJefe + ">";
-                            html += "<td>" + t.nombre + "</td>";
-                            html += "<td>" + rol + "</td>";
-                            html += "<td>" + t.cortes + "</td>";
-                            html += "<td>$" + t.total.toLocaleString("es-AR") + "</td>";
-                            html += "<td>" + Math.round(t.porcentaje * 100) + "%</td>";
-                            html += "<td>$" + t.comision.toLocaleString("es-AR") + "</td>";
-                            html += "</tr>";
-                        });
-
-                        html += "</table>";
-                        html += "<br><br>";
-
-                        // TRANSFERENCIAS DETALLADAS
-                        const transferencias = cortesDia.filter(function(a) {
-                            return a.formaPago === "TRANSFERENCIA";
-                        });
-
-                        if (transferencias.length > 0) {
-                            html += "<table>";
-                            html += "<tr><td colspan='4' class='subtitulo'>DETALLE DE TRANSFERENCIAS</td></tr>";
-                            html += "<tr><th>Hora</th><th>Barbero</th><th>Nombre Transferencia</th><th>Monto</th></tr>";
-                            
-                            transferencias.forEach(function(a) {
-                                const hora = a.horaLlegada || "-";
-                                const barbero = a.barbero ? a.barbero.nombre : "-";
-                                const nombre = a.nombreTransferencia || "-";
-                                const precio = Number(a.precio || 0);
-                                
-                                html += "<tr>";
-                                html += "<td>" + hora + "</td>";
-                                html += "<td>" + barbero + "</td>";
-                                html += "<td>" + nombre + "</td>";
-                                html += "<td>$" + precio.toLocaleString("es-AR") + "</td>";
-                                html += "</tr>";
-                            });
-                            
-                            html += "<tr class='total'><td colspan='3'><b>Total Transferencias:</b></td><td>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
-                            html += "</table>";
-                        }
-                        
-                        html += "</body></html>";
-
-                        // Download como .xls (Excel lo abre perfecto)
-                        const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "Reporte_Barberia_" + fechaArchivo + ".xls";
-                        link.click();
-                        URL.revokeObjectURL(url);
-                    });
+                // Descargar como .xlsx
+                XLSX.writeFile(wb, "Reporte_Barberia_" + fechaArchivo + ".xlsx");
             });
-
+        });
     }
-
-    /* ==============================
-       INICIO
-    ============================== */
 
     mostrarFecha();
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a38234aab5e7a0',t:'MTc4NjU3OTk1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a3ef7babf6e797',t:'MTc4NjU4NDQyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
