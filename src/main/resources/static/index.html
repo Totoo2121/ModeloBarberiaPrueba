@@ -2677,48 +2677,26 @@
 
                 let totalBarberia = totalFacturado - totalComisiones;
 
-                var html = '';
-                html += '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-                html += '<head><meta charset="UTF-8">';
-                html += '<xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
-                html += '<x:Name>Resumen</x:Name>';
-                html += '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>';
-                html += '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>';
-                html += '</head><body>';
-
-                html += '<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">';
-                html += '<tr><td colspan="2" style="background-color: #2F4F4F; color: white; font-size: 18px; font-weight: bold; text-align: center; padding: 10px; border: 2px solid #000;"> LUJAN BARBER SHOP</td></tr>';
-                html += '<tr><td colspan="2" style="text-align: center; padding: 5px; border: 2px solid #000; font-size: 14px;"><b>Reporte de Cortes</b></td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Fecha:</td><td style="padding: 5px; border: 2px solid #000;">' + fechaTexto + '</td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Generado:</td><td style="padding: 5px; border: 2px solid #000;">' + new Date().toLocaleString("es-AR") + '</td></tr>';
-                html += '</table><br>';
-
-                html += '<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">';
-                html += '<tr><td colspan="2" style="background-color: #4682B4; color: white; font-size: 14px; font-weight: bold; padding: 5px; border: 2px solid #000;">RESUMEN GENERAL</td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Total de Cortes:</td><td style="padding: 5px; border: 2px solid #000; font-size: 14px;"><b>' + cortesDia.length + '</b></td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Total Facturado:</td><td style="padding: 5px; border: 2px solid #000; font-size: 14px;"><b>$' + totalFacturado.toLocaleString("es-AR") + '</b></td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Comisiones Barberos:</td><td style="padding: 5px; border: 2px solid #000; font-size: 14px;"><b>$' + totalComisiones.toLocaleString("es-AR") + '</b></td></tr>';
-                html += '<tr><td style="background-color: #FFFF00; padding: 5px; border: 2px solid #000; font-weight: bold;">Ganancia Barbería:</td><td style="background-color: #FFFF00; padding: 5px; border: 2px solid #000; font-size: 14px;"><b>$' + totalBarberia.toLocaleString("es-AR") + '</b></td></tr>';
-                html += '</table><br>';
-
-                html += '<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">';
-                html += '<tr><td colspan="2" style="background-color: #4682B4; color: white; font-size: 14px; font-weight: bold; padding: 5px; border: 2px solid #000;">FORMAS DE PAGO</td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Efectivo:</td><td style="padding: 5px; border: 2px solid #000;">$' + totalEfectivo.toLocaleString("es-AR") + '</td></tr>';
-                html += '<tr><td style="background-color: #E0E0E0; padding: 5px; border: 2px solid #000; font-weight: bold;">Transferencia:</td><td style="padding: 5px; border: 2px solid #000;">$' + totalTransferencia.toLocaleString("es-AR") + '</td></tr>';
-                html += '</table><br>';
-
-                html += '<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">';
-                html += '<tr><td colspan="7" style="background-color: #4682B4; color: white; font-size: 14px; font-weight: bold; padding: 5px; border: 2px solid #000;">DETALLE DE CORTES</td></tr>';
-                html += '<tr>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Hora</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Barbero</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Servicio</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Pago</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Precio</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">%</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Comisión</th>';
-                html += '</tr>';
-
+                // Generar CSV compatible con cualquier celular
+                let csv = '';
+                csv += 'LUJAN BARBER SHOP\n';
+                csv += 'Reporte de Cortes\n';
+                csv += 'Fecha:,' + fechaTexto + '\n';
+                csv += 'Generado:,' + new Date().toLocaleString("es-AR") + '\n\n';
+                
+                csv += 'RESUMEN GENERAL\n';
+                csv += 'Total de Cortes:,' + cortesDia.length + '\n';
+                csv += 'Total Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\n';
+                csv += 'Comisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\n';
+                csv += 'Ganancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
+                
+                csv += 'FORMAS DE PAGO\n';
+                csv += 'Efectivo:,"$' + totalEfectivo.toLocaleString("es-AR") + '"\n';
+                csv += 'Transferencia:,"$' + totalTransferencia.toLocaleString("es-AR") + '"\n\n';
+                
+                csv += 'DETALLE DE CORTES\n';
+                csv += 'Hora,Barbero,Servicio,Pago,Precio,%,Comisión\n';
+                
                 cortesDia.forEach(function(a) {
                     const barbero = a.barbero ? a.barbero.nombre : "-";
                     const servicio = a.servicio ? a.servicio.nombre : "-";
@@ -2728,21 +2706,23 @@
                     const comision = precio * pct;
                     const hora = a.horaLlegada || "-";
                     const esJefe = a.barbero && a.barbero.esJefe;
-                    const bg = esJefe ? 'background-color: #FFD700;' : '';
+                    const nombreBarbero = (esJefe ? 'Jefe ' : '') + barbero;
 
-                    html += '<tr style="' + bg + '">';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + hora + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + (esJefe ? 'Jefe ' : '') + barbero + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + servicio + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + (a.formaPago || "-") + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">$' + precio.toLocaleString("es-AR") + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + Math.round(pct * 100) + '%</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;"><b>$' + comision.toLocaleString("es-AR") + '</b></td>';
-                    html += '</tr>';
+                    csv += hora + ',';
+                    csv += nombreBarbero + ',';
+                    csv += servicio + ',';
+                    csv += (a.formaPago || "-") + ',';
+                    csv += '"$' + precio.toLocaleString("es-AR") + '",';
+                    csv += Math.round(pct * 100) + '%,';
+                    csv += '"$' + comision.toLocaleString("es-AR") + '"\n';
                 });
-
-                html += '</table><br>';
-
+                
+                csv += '\n';
+                
+                // Resumen por barbero
+                csv += 'RESUMEN POR BARBERO\n';
+                csv += 'Barbero,Rol,Cortes,Facturado,%,Ganancia\n';
+                
                 const totals = {};
                 cortesDia.forEach(function(a) {
                     const id = a.barbero ? a.barbero.idBarbero : 0;
@@ -2760,44 +2740,28 @@
                     totals[id].total += precio;
                     totals[id].comision += precio * totals[id].porcentaje;
                 });
-
-                html += '<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">';
-                html += '<tr><td colspan="6" style="background-color: #4682B4; color: white; font-size: 14px; font-weight: bold; padding: 5px; border: 2px solid #000;">RESUMEN POR BARBERO</td></tr>';
-                html += '<tr>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Barbero</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Rol</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Cortes</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Facturado</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">%</th>';
-                html += '<th style="background-color: #D3D3D3; padding: 5px; border: 2px solid #000;">Ganancia</th>';
-                html += '</tr>';
-
+                
                 Object.keys(totals).sort(function(a, b) {
                     return totals[a].nombre.localeCompare(totals[b].nombre);
                 }).forEach(function(id) {
                     const t = totals[id];
                     const rol = t.esJefe ? "Jefe" : "Barbero";
-                    const bg = t.esJefe ? 'background-color: #FFD700;' : '';
-                    html += '<tr style="' + bg + '">';
-                    html += '<td style="padding: 5px; border: 1px solid #000;"><b>' + t.nombre + '</b></td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + rol + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000; text-align: center;">' + t.cortes + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">$' + t.total.toLocaleString("es-AR") + '</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;">' + Math.round(t.porcentaje * 100) + '%</td>';
-                    html += '<td style="padding: 5px; border: 1px solid #000;"><b>$' + t.comision.toLocaleString("es-AR") + '</b></td>';
-                    html += '</tr>';
+                    csv += t.nombre + ',';
+                    csv += rol + ',';
+                    csv += t.cortes + ',';
+                    csv += '"$' + t.total.toLocaleString("es-AR") + '",';
+                    csv += Math.round(t.porcentaje * 100) + '%,';
+                    csv += '"$' + t.comision.toLocaleString("es-AR") + '"\n';
                 });
 
-                html += '</table>';
-                html += '</body></html>';
-
-                const blob = new Blob(['﻿' + html], {
-                    type: 'application/vnd.ms-excel'
+                // Descargar como CSV (compatible con cualquier celular)
+                const blob = new Blob(['\uFEFF' + csv], {
+                    type: 'text/csv;charset=utf-8;'
                 });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = "Reporte_Barberia_" + fechaArchivo + ".xls";
+                link.download = "Reporte_Barberia_" + fechaArchivo + ".csv";
                 link.click();
                 URL.revokeObjectURL(url);
             });
@@ -2805,11 +2769,12 @@
     }
 
 
+
     mostrarFecha();
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a438ad1b5ab273',t:'MTc4NjU4NzQyNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a44dc04d8cb273',t:'MTc4NjU4ODI4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
