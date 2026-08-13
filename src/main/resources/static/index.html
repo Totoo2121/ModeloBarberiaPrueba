@@ -925,6 +925,7 @@
 
                         <tr>
 
+                            <th>Hora</th>
                             <th>Servicio</th>
                             <th>Descripción</th>
                             <th>Pago</th>
@@ -1066,6 +1067,7 @@
 
                             <tr>
 
+                                <th>Hora</th>
                                 <th>Servicio</th>
                                 <th>Descripción</th>
                                 <th>Pago</th>
@@ -1963,7 +1965,7 @@
                 tabla.innerHTML = `
                     <tr>
                         <td
-                            colspan="6"
+                            colspan="7"
                             style="text-align:center; padding:30px;"
                         >
                             No hay cortes registrados en esta fecha.
@@ -2077,8 +2079,14 @@
                     === usuarioActual.id
             );
 
+        const horaMostrar = atencion.horaLlegada || "-";
+
 
         fila.innerHTML = `
+
+            <td>
+                ${horaMostrar}
+            </td>
 
             <td>
                 ${servicio}
@@ -2550,7 +2558,7 @@
                 <tr>
 
                     <td
-                        colspan="6"
+                        colspan="7"
                         style="text-align:center; padding:30px;"
                     >
                         Este barbero no tiene cortes en esta fecha.
@@ -2651,9 +2659,11 @@
                             return coincideFecha(a.fecha);
                         });
 
-                        // Ordenar por ID de atención
+                        // Ordenar por hora
                         cortesDia.sort(function(a, b) {
-                            return a.idAtencion - b.idAtencion;
+                            var horaA = a.horaLlegada || "00:00";
+                            var horaB = b.horaLlegada || "00:00";
+                            return horaA.localeCompare(horaB);
                         });
 
                         // Create barbero map
@@ -2706,10 +2716,10 @@
                         
                         // ENCABEZADO
                         html += "<table>";
-                        html += "<tr><td colspan='8' class='titulo'>LUJAN BARBER SHOP</td></tr>";
-                        html += "<tr><td colspan='8' style='text-align:center; font-size:14px;'>Reporte de Cortes</td></tr>";
-                        html += "<tr><td colspan='2'><b>Fecha:</b></td><td colspan='6'>" + fechaTexto + "</td></tr>";
-                        html += "<tr><td colspan='2'><b>Generado:</b></td><td colspan='6'>" + new Date().toLocaleString("es-AR") + "</td></tr>";
+                        html += "<tr><td colspan='9' class='titulo'>LUJAN BARBER SHOP</td></tr>";
+                        html += "<tr><td colspan='9' style='text-align:center; font-size:14px;'>Reporte de Cortes</td></tr>";
+                        html += "<tr><td colspan='2'><b>Fecha:</b></td><td colspan='7'>" + fechaTexto + "</td></tr>";
+                        html += "<tr><td colspan='2'><b>Generado:</b></td><td colspan='7'>" + new Date().toLocaleString("es-AR") + "</td></tr>";
                         html += "</table>";
                         html += "<br>";
                         
@@ -2733,8 +2743,8 @@
 
                         // DETALLE DE CORTES
                         html += "<table>";
-                        html += "<tr><td colspan='8' class='subtitulo'>DETALLE DE CORTES</td></tr>";
-                        html += "<tr><th>Barbero</th><th>Servicio</th><th>Descripción</th><th>Forma de Pago</th><th>Nombre Transferencia</th><th>Precio</th><th>Porcentaje</th><th>Comisión</th></tr>";
+                        html += "<tr><td colspan='9' class='subtitulo'>DETALLE DE CORTES</td></tr>";
+                        html += "<tr><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Descripción</th><th>Forma de Pago</th><th>Nombre Transferencia</th><th>Precio</th><th>Porcentaje</th><th>Comisión</th></tr>";
 
                         cortesDia.forEach(function(a) {
                             const barbero = a.barbero ? (a.barbero.nombre || "-") : "-";
@@ -2749,9 +2759,11 @@
                                 : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
                             
                             const comision = precio * pct;
+                            const hora = a.horaLlegada || "-";
                             const esJefeRow = a.barbero && a.barbero.esJefe ? "class='jefe'" : "";
 
                             html += "<tr " + esJefeRow + ">";
+                            html += "<td>" + hora + "</td>";
                             html += "<td>" + barbero + "</td>";
                             html += "<td>" + servicio + "</td>";
                             html += "<td>" + descripcion + "</td>";
@@ -2824,21 +2836,23 @@
                         if (transferencias.length > 0) {
                             html += "<table>";
                             html += "<tr><td colspan='4' class='subtitulo'>DETALLE DE TRANSFERENCIAS</td></tr>";
-                            html += "<tr><th>Barbero</th><th>Nombre Transferencia</th><th>Monto</th></tr>";
+                            html += "<tr><th>Hora</th><th>Barbero</th><th>Nombre Transferencia</th><th>Monto</th></tr>";
                             
                             transferencias.forEach(function(a) {
+                                const hora = a.horaLlegada || "-";
                                 const barbero = a.barbero ? a.barbero.nombre : "-";
                                 const nombre = a.nombreTransferencia || "-";
                                 const precio = Number(a.precio || 0);
                                 
                                 html += "<tr>";
+                                html += "<td>" + hora + "</td>";
                                 html += "<td>" + barbero + "</td>";
                                 html += "<td>" + nombre + "</td>";
                                 html += "<td>$" + precio.toLocaleString("es-AR") + "</td>";
                                 html += "</tr>";
                             });
                             
-                            html += "<tr class='total'><td colspan='2'><b>Total Transferencias:</b></td><td>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
+                            html += "<tr class='total'><td colspan='3'><b>Total Transferencias:</b></td><td>$" + totalTransferencia.toLocaleString("es-AR") + "</td></tr>";
                             html += "</table>";
                         }
                         
@@ -2865,7 +2879,7 @@
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a2c3a4edf17a90',t:'MTc4NjU3MjE0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a38234aab5e7a0',t:'MTc4NjU3OTk1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
