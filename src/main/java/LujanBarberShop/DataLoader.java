@@ -30,23 +30,23 @@ public class DataLoader implements CommandLineRunner {
             b1.setPorcentajeComision(0.50);
             barberoRepository.save(b1);
 
-            // Jefe Diego - 100%
+            // Jefe Gabi - 100%
             Barbero b2 = new Barbero();
-            b2.setNombre("Diego");
+            b2.setNombre("Gabi");
             b2.setActivo(true);
             b2.setEsJefe(true);
             b2.setPorcentajeComision(1.00);
             barberoRepository.save(b2);
 
-            // Jefe Gabriel - 100%
+            // Jefe Diego - 100%
             Barbero b3 = new Barbero();
-            b3.setNombre("Gabriel");
+            b3.setNombre("Diego");
             b3.setActivo(true);
             b3.setEsJefe(true);
             b3.setPorcentajeComision(1.00);
             barberoRepository.save(b3);
 
-            System.out.println(">>> ✅ 3 barberos creados: Luciano (50%), Diego (100%), Gabriel (100%)");
+            System.out.println(">>> ✅ 3 barberos creados: Luciano (50%), Gabi (100%), Diego (100%)");
         }
 
         if (servicioRepository.count() == 0) {
