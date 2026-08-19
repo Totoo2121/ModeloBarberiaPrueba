@@ -1236,15 +1236,6 @@ let vistaSemanal = false; // false = día, true = semana
         }
 
 
-        if (password !== "1234") {
-
-            mensaje.textContent =
-                "Contraseña incorrecta";
-
-            return;
-        }
-
-
         // Buscar el barbero en la lista cargada
         usuarioActual = null;
         for (var i = 0; i < barberosLista.length; i++) {
@@ -1256,6 +1247,26 @@ let vistaSemanal = false; // false = día, true = semana
 
         if (!usuarioActual) {
             mensaje.textContent = "Usuario no encontrado";
+            return;
+        }
+
+
+        // Validar contraseña según el rol
+        let passwordCorrecta = false;
+        if (usuarioActual.esJefe) {
+            // Jefes: contraseña "Blessed" (case-insensitive)
+            passwordCorrecta = password.toLowerCase() === "blessed";
+        } else {
+            // Barberos: contraseña "1234"
+            passwordCorrecta = password === "1234";
+        }
+
+
+        if (!passwordCorrecta) {
+
+            mensaje.textContent =
+                usuarioActual.esJefe ? "Contraseña de admin incorrecta" : "Contraseña incorrecta";
+
             return;
         }
 
@@ -2925,7 +2936,7 @@ let vistaSemanal = false; // false = día, true = semana
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dc0f6c5b9dc084',t:'MTc4NzE3MjkzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dc810b1f0a1eb9',t:'MTc4NzE3NzU5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
