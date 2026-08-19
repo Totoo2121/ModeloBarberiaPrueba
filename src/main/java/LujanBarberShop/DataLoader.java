@@ -16,47 +16,48 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
         System.out.println("==========================================");
         System.out.println(">>> DataLoader ejecutándose...");
         System.out.println(">>> Barberos existentes: " + barberoRepository.count());
         System.out.println(">>> Servicios existentes: " + servicioRepository.count());
 
         if (barberoRepository.count() == 0) {
-            // Barberos de ejemplo (modificá según tu barbería)
+            // Barbero Luciano - 50%
             Barbero b1 = new Barbero();
-            b1.setNombre("Barbero 1");
+            b1.setNombre("Luciano");
             b1.setActivo(true);
             b1.setEsJefe(false);
             b1.setPorcentajeComision(0.50);
             barberoRepository.save(b1);
 
+            // Jefe Diego - 100%
             Barbero b2 = new Barbero();
-            b2.setNombre("Barbero 2");
+            b2.setNombre("Diego");
             b2.setActivo(true);
-            b2.setEsJefe(false);
-            b2.setPorcentajeComision(0.40);
+            b2.setEsJefe(true);
+            b2.setPorcentajeComision(1.00);
             barberoRepository.save(b2);
 
+            // Jefe Gabriel - 100%
             Barbero b3 = new Barbero();
-            b3.setNombre("Dueño");
+            b3.setNombre("Gabriel");
             b3.setActivo(true);
             b3.setEsJefe(true);
             b3.setPorcentajeComision(1.00);
             barberoRepository.save(b3);
 
-            System.out.println(">>> ✅ 3 barberos de ejemplo creados");
+            System.out.println(">>> ✅ 3 barberos creados: Luciano (50%), Diego (100%), Gabriel (100%)");
         }
 
         if (servicioRepository.count() == 0) {
             Servicio s1 = new Servicio();
-            s1.setNombre("Corte");
+            s1.setNombre("Corte clásico");
             s1.setPrecio(10000.0);
             s1.setActivo(true);
             servicioRepository.save(s1);
 
             Servicio s2 = new Servicio();
-            s2.setNombre("Corte + Barba");
+            s2.setNombre("Corte moderno");
             s2.setPrecio(12000.0);
             s2.setActivo(true);
             servicioRepository.save(s2);
@@ -67,7 +68,13 @@ public class DataLoader implements CommandLineRunner {
             s3.setActivo(true);
             servicioRepository.save(s3);
 
-            System.out.println(">>> ✅ 3 servicios de ejemplo creados");
+            Servicio s4 = new Servicio();
+            s4.setNombre("Corte + Barba");
+            s4.setPrecio(15000.0);
+            s4.setActivo(true);
+            servicioRepository.save(s4);
+
+            System.out.println(">>> ✅ 4 servicios creados");
         }
 
         System.out.println(">>> TOTAL: " + barberoRepository.count() + " barberos, " + servicioRepository.count() + " servicios");

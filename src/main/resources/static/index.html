@@ -336,7 +336,7 @@
 
         .resumen {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -518,7 +518,7 @@
             }
 
             .resumen {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, 1fr);
             }
 
             .formulario {
@@ -664,8 +664,11 @@
             style="display:none;"
         >
 
-            <button onclick="mostrarSeccion('resumenJefe')">
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('dia')" id="btnDia" style="background: #25c76f;">
                 RESUMEN DEL DÍA
+            </button>
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('semana')" id="btnSemana" style="background: var(--gris-boton);">
+                SEMANAL
             </button>
 
             <button onclick="mostrarSeccion('registrar')">
@@ -953,7 +956,7 @@
 
             <div class="encabezado">
 
-                <h2>
+                <h2 id="tituloResumen">
                     Resumen del día
                 </h2>
 
@@ -1015,7 +1018,41 @@
                 <div class="tarjeta">
 
                     <h3>
-                        Comisión barberos
+                        💵 Efectivo
+                    </h3>
+
+                    <div
+                        class="numero"
+                        id="totalEfectivo"
+                        style="color: #4CAF50;"
+                    >
+                        $0
+                    </div>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <h3>
+                        📱 Transferencia
+                    </h3>
+
+                    <div
+                        class="numero"
+                        id="totalTransferencia"
+                        style="color: #2196F3;"
+                    >
+                        $0
+                    </div>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <h3>
+                        Comisiones
                     </h3>
 
                     <div
@@ -1107,8 +1144,9 @@
     let atenciones = [];
     let servicios = [];
     let barberosLista = [];
+let vistaSemanal = false; // false = día, true = semana
 
-    const PORCENTAJE_BARBERO = 0.40;
+    const PORCENTAJE_BARBERO = 0.50;
     const PORCENTAJE_JEFE = 1.00;
 
 
@@ -2242,6 +2280,37 @@
        RESUMEN JEFE
     ============================== */
 
+
+    function cambiarVista(modo) {
+        vistaSemanal = (modo === 'semana');
+        const btnDia = document.getElementById('btnDia');
+        const btnSemana = document.getElementById('btnSemana');
+        
+        if (vistaSemanal) {
+            btnDia.style.background = 'var(--gris-boton)';
+            btnSemana.style.background = '#25c76f';
+        } else {
+            btnDia.style.background = '#25c76f';
+            btnSemana.style.background = 'var(--gris-boton)';
+        }
+        
+        cargarResumenJefe();
+    }
+
+    function esDeEstaSemana(fecha) {
+        if (!fecha) return false;
+        const fechaCorte = new Date(fecha);
+        const hoy = new Date();
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+        inicioSemana.setHours(0, 0, 0, 0);
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(inicioSemana.getDate() + 6);
+        finSemana.setHours(23, 59, 59, 999);
+        
+        return fechaCorte >= inicioSemana && fechaCorte <= finSemana;
+    }
+
     async function cargarResumenJefe() {
 
         try {
@@ -2271,14 +2340,21 @@
                 atenciones.filter(
                     function(atencion) {
 
-                        return coincideFecha(
-                            atencion.fecha
-                        );
+                        if (vistaSemanal) {
+                            return esDeEstaSemana(atencion.fecha);
+                        } else {
+                            return coincideFecha(atencion.fecha);
+                        }
 
                     }
                 );
 
-            // Update date display
+            // Update title and date display
+            const tituloEl = document.getElementById('tituloResumen');
+            if (tituloEl) {
+                tituloEl.textContent = vistaSemanal ? 'Resumen semanal' : 'Resumen del día';
+            }
+            
             const filtro = obtenerFechaFiltro();
             const textoFecha = filtro.toLocaleDateString("es-AR", {
                 weekday: "long",
@@ -2291,6 +2367,8 @@
             let facturacion = 0;
             let totalComisiones = 0;
             let gananciaBarberia = 0;
+            let totalEfectivo = 0;
+            let totalTransferencia = 0;
 
 
             cortesHoy.forEach(
@@ -2309,6 +2387,13 @@
                     // Lo que queda para la barbería
                     gananciaBarberia += (precio - comision);
 
+                    // Desglose por forma de pago
+                    if (atencion.formaPago === "EFECTIVO") {
+                        totalEfectivo += precio;
+                    } else if (atencion.formaPago === "TRANSFERENCIA") {
+                        totalTransferencia += precio;
+                    }
+
                 }
             );
 
@@ -2324,6 +2409,22 @@
             ).textContent =
                 dinero(
                     facturacion
+                );
+
+
+            document.getElementById(
+                "totalEfectivo"
+            ).textContent =
+                dinero(
+                    totalEfectivo
+                );
+
+
+            document.getElementById(
+                "totalTransferencia"
+            ).textContent =
+                dinero(
+                    totalTransferencia
                 );
 
 
@@ -2792,7 +2893,7 @@
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dacd5a19f875f3',t:'MTc4NzE1OTc0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 
 </html>
 
