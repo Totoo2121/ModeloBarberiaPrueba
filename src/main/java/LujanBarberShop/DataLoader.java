@@ -51,30 +51,48 @@ public class DataLoader implements CommandLineRunner {
 
         if (servicioRepository.count() == 0) {
             Servicio s1 = new Servicio();
-            s1.setNombre("Corte clásico");
-            s1.setPrecio(10000.0);
+            s1.setNombre("Corte de pelo");
+            s1.setPrecio(12000.0);
             s1.setActivo(true);
             servicioRepository.save(s1);
 
             Servicio s2 = new Servicio();
-            s2.setNombre("Corte moderno");
-            s2.setPrecio(12000.0);
+            s2.setNombre("Corte y Barba");
+            s2.setPrecio(14000.0);
             s2.setActivo(true);
             servicioRepository.save(s2);
 
             Servicio s3 = new Servicio();
             s3.setNombre("Barba");
-            s3.setPrecio(6000.0);
+            s3.setPrecio(5000.0);
             s3.setActivo(true);
             servicioRepository.save(s3);
 
             Servicio s4 = new Servicio();
-            s4.setNombre("Corte + Barba");
-            s4.setPrecio(15000.0);
+            s4.setNombre("Claritos");
+            s4.setPrecio(40000.0);
             s4.setActivo(true);
             servicioRepository.save(s4);
 
-            System.out.println(">>> ✅ 4 servicios creados");
+            Servicio s5 = new Servicio();
+            s5.setNombre("Global");
+            s5.setPrecio(45000.0);
+            s5.setActivo(true);
+            servicioRepository.save(s5);
+
+            Servicio s6 = new Servicio();
+            s6.setNombre("Ondulaciones");
+            s6.setPrecio(40000.0);
+            s6.setActivo(true);
+            servicioRepository.save(s6);
+
+            Servicio s7 = new Servicio();
+            s7.setNombre("Rapado y Barba");
+            s7.setPrecio(6000.0);
+            s7.setActivo(true);
+            servicioRepository.save(s7);
+
+            System.out.println(">>> ✅ 7 servicios creados");
         }
 
         System.out.println(">>> TOTAL: " + barberoRepository.count() + " barberos, " + servicioRepository.count() + " servicios");
