@@ -5,8 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <title>Lujan Barber Shop</title>
+    <title>Barber Shop</title>
 
     <style>
 
@@ -556,7 +557,7 @@
                 ✂
             </div>
 
-            <h1>Lujan Barber Shop</h1>
+            <h1 id="nombreApp">Barber Shop</h1>
 
             <p>Control de cortes</p>
 
@@ -574,12 +575,6 @@
                 <option value="">
                     Seleccionar usuario
                 </option>
-
-                <option value="1">Leo</option>
-                <option value="2">Tomas</option>
-                <option value="3">Nico</option>
-                <option value="4">Jere</option>
-                <option value="5">Dani</option>
 
             </select>
 
@@ -619,8 +614,8 @@
 
         <div class="encabezado">
 
-            <h1>
-                ✂ Lujan Barber Shop
+            <h1 id="tituloApp">
+                ✂ Barber Shop
             </h1>
 
             <div
@@ -675,6 +670,10 @@
 
             <button onclick="mostrarSeccion('registrar')">
                 + AGREGAR CORTE
+            </button>
+
+            <button onclick="mostrarSeccion('miResumen')">
+                MIS CORTES
             </button>
 
             <button
@@ -828,7 +827,7 @@
             <div class="encabezado">
 
                 <h2>
-                    Mi resumen
+                    <span id="tituloMiResumen">Mi resumen</span>
                 </h2>
 
                 <div
@@ -836,6 +835,19 @@
                     id="fechaResumen"
                 ></div>
 
+            </div>
+
+
+            <!-- SELECTOR DE FECHA BARBERO -->
+            <div style="text-align:center; margin-bottom:25px;">
+                <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
+                <input 
+                    type="date" 
+                    id="fechaSelectorBarbero" 
+                    style="width:auto; display:inline-block; padding:10px 15px;"
+                    onchange="cargarResumenBarberoConFecha()"
+                >
+                <button onclick="volverAHoyBarbero()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
             </div>
 
 
@@ -953,6 +965,19 @@
             </div>
 
 
+            <!-- SELECTOR DE FECHA -->
+            <div style="text-align:center; margin-bottom:25px;">
+                <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
+                <input 
+                    type="date" 
+                    id="fechaSelector" 
+                    style="width:auto; display:inline-block; padding:10px 15px;"
+                    onchange="cargarResumenJefeConFecha()"
+                >
+                <button onclick="volverAHoy()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
+            </div>
+
+
             <div class="resumen">
 
                 <div class="tarjeta">
@@ -1010,6 +1035,8 @@
                 <h2>
                     Detalle por barbero
                 </h2>
+
+                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px;">📊 EXPORTAR EXCEL</button>
 
             </div>
 
@@ -1079,6 +1106,7 @@
 
     let atenciones = [];
     let servicios = [];
+    let barberosLista = [];
 
     const PORCENTAJE_BARBERO = 0.40;
     const PORCENTAJE_JEFE = 1.00;
@@ -1162,46 +1190,21 @@
         }
 
 
-        const usuarios = {
-
-            1: {
-                id: 1,
-                nombre: "Leo",
-                jefe: false
-            },
-
-            2: {
-                id: 2,
-                nombre: "Tomas",
-                jefe: false
-            },
-
-            3: {
-                id: 3,
-                nombre: "Nico",
-                jefe: false
-            },
-
-            4: {
-                id: 4,
-                nombre: "Jere",
-                jefe: true
-            },
-
-            5: {
-                id: 5,
-                nombre: "Dani",
-                jefe: true
+        // Buscar el barbero en la lista cargada
+        usuarioActual = null;
+        for (var i = 0; i < barberosLista.length; i++) {
+            if (String(barberosLista[i].idBarbero) === usuario) {
+                usuarioActual = barberosLista[i];
+                break;
             }
+        }
 
-        };
+        if (!usuarioActual) {
+            mensaje.textContent = "Usuario no encontrado";
+            return;
+        }
 
-
-        usuarioActual =
-            usuarios[usuario];
-
-        esJefe =
-            usuarioActual.jefe;
+        esJefe = usuarioActual.esJefe === true;
 
 
         document.getElementById(
@@ -1743,39 +1746,45 @@
 
 
     /* ==============================
-       ES DE HOY
+       FECHA SELECCIONADA
     ============================== */
 
-    function esDeHoy(fecha) {
+    let fechaSeleccionada = null;
 
-        if (!fecha) {
-            return false;
+    function obtenerFechaFiltro() {
+        const selector = document.getElementById("fechaSelector");
+        if (selector && selector.value) {
+            return new Date(selector.value + "T12:00:00");
         }
+        return new Date();
+    }
 
-
-        const fechaCorte =
-            new Date(fecha);
-
-
-        const hoy =
-            new Date();
-
-
+    function coincideFecha(fecha) {
+        if (!fecha) return false;
+        const fechaCorte = new Date(fecha);
+        const filtro = obtenerFechaFiltro();
         return (
-            fechaCorte.getFullYear()
-                === hoy.getFullYear()
-
-            &&
-
-            fechaCorte.getMonth()
-                === hoy.getMonth()
-
-            &&
-
-            fechaCorte.getDate()
-                === hoy.getDate()
+            fechaCorte.getFullYear() === filtro.getFullYear()
+            && fechaCorte.getMonth() === filtro.getMonth()
+            && fechaCorte.getDate() === filtro.getDate()
         );
+    }
 
+    function esDeHoy(fecha) {
+        return coincideFecha(fecha);
+    }
+
+    function volverAHoy() {
+        const hoy = new Date();
+        const a = hoy.getFullYear();
+        const m = String(hoy.getMonth() + 1).padStart(2, '0');
+        const d = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById("fechaSelector").value = a + "-" + m + "-" + d;
+        cargarResumenJefe();
+    }
+
+    function cargarResumenJefeConFecha() {
+        cargarResumenJefe();
     }
 
 
@@ -1789,20 +1798,76 @@
 
             await cargarAtenciones();
 
+            // Obtener el porcentaje del barbero desde la API
+            let porcentajeUsuario = PORCENTAJE_BARBERO;
+            try {
+                const respuestaBarbero = await fetch("/barberos/" + usuarioActual.id);
+                if (respuestaBarbero.ok) {
+                    const datosBarbero = await respuestaBarbero.json();
+                    porcentajeUsuario = datosBarbero.porcentajeComision || (esJefe ? 1.00 : 0.40);
+                }
+            } catch (e) {
+                porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
+            }
 
+
+            // Set barbero date selector to today if not set
+            const selectorBarbero = document.getElementById("fechaSelectorBarbero");
+            if (selectorBarbero && !selectorBarbero.value) {
+                const hoy = new Date();
+                const a = hoy.getFullYear();
+                const m = String(hoy.getMonth() + 1).padStart(2, '0');
+                const d = String(hoy.getDate()).padStart(2, '0');
+                selectorBarbero.value = a + "-" + m + "-" + d;
+            }
+
+            // Use barbero date selector if it has a value, otherwise use the jefe one
+            const selectorActivo = document.getElementById("fechaSelectorBarbero");
+            if (selectorActivo && selectorActivo.value) {
+                // Override the global fechaSeleccionada temporarily
+                const prevSel = fechaSeleccionada;
+                fechaSeleccionada = new Date(selectorActivo.value + "T12:00:00");
+                
+                // Update fecha display
+                const filtro = obtenerFechaFiltro();
+                const textoFecha = filtro.toLocaleDateString("es-AR", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+                document.getElementById("fechaResumen").textContent = textoFecha;
+                document.querySelector("#miResumen .titulo-seccion h2").textContent = "Cortes del " + filtro.toLocaleDateString("es-AR", {day:"numeric", month:"short", year:"numeric"});
+                
+                fechaSeleccionada = prevSel;
+            }
+
+            // Override coincideFecha temporarily for barbero view
+            const prevCoincide = coincideFecha;
+            const selectorB = document.getElementById("fechaSelectorBarbero");
+            
             const misCortes =
                 atenciones.filter(
                     function(atencion) {
 
+                        if (!atencion.barbero || atencion.barbero.idBarbero !== usuarioActual.id) {
+                            return false;
+                        }
+                        
+                        if (!atencion.fecha) return false;
+                        const fechaCorte = new Date(atencion.fecha);
+                        
+                        let filtroFecha;
+                        if (selectorB && selectorB.value) {
+                            filtroFecha = new Date(selectorB.value + "T12:00:00");
+                        } else {
+                            filtroFecha = new Date();
+                        }
+                        
                         return (
-                            atencion.barbero
-                            &&
-                            atencion.barbero.idBarbero
-                                === usuarioActual.id
-                            &&
-                            esDeHoy(
-                                atencion.fecha
-                            )
+                            fechaCorte.getFullYear() === filtroFecha.getFullYear()
+                            && fechaCorte.getMonth() === filtroFecha.getMonth()
+                            && fechaCorte.getDate() === filtroFecha.getDate()
                         );
 
                     }
@@ -1824,9 +1889,17 @@
             );
 
 
-            const porcentaje = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
-            const ganancia =
-                total * porcentaje;
+            const ganancia = total * porcentajeUsuario;
+
+            // Actualizar el label según el porcentaje
+            const porcentajeTexto = Math.round(porcentajeUsuario * 100);
+            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = 
+                "Mi " + porcentajeTexto + "%";
+            
+            // Actualizar el título según si es jefe o barbero
+            if (esJefe) {
+                document.getElementById("tituloMiResumen").textContent = "Mis cortes";
+            }
 
 
             document.getElementById(
@@ -1866,7 +1939,7 @@
                             colspan="7"
                             style="text-align:center; padding:30px;"
                         >
-                            No hay cortes registrados hoy.
+                            No hay cortes registrados en esta fecha.
                         </td>
                     </tr>
                 `;
@@ -1924,14 +1997,11 @@
 
 
         const precio = Number(atencion.precio || 0);
-        const esBarberoJefe = atencion.barbero && atencion.barbero.esJefe === true;
-        const porcentaje = esBarberoJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
+        // Usar el porcentaje del barbero desde la API
+        const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
+            ? atencion.barbero.porcentajeComision 
+            : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
         const ganancia = precio * porcentaje;
-
-
-        const hora =
-            atencion.horaLlegada
-            || "-";
 
 
         const servicio =
@@ -1980,11 +2050,13 @@
                     === usuarioActual.id
             );
 
+        const horaMostrar = atencion.horaLlegada || "-";
+
 
         fila.innerHTML = `
 
             <td>
-                ${hora}
+                ${horaMostrar}
             </td>
 
             <td>
@@ -2174,24 +2246,51 @@
 
         try {
 
+            // Set date selector to today if not set
+            const selector = document.getElementById("fechaSelector");
+            if (selector && !selector.value) {
+                const hoy = new Date();
+                const a = hoy.getFullYear();
+                const m = String(hoy.getMonth() + 1).padStart(2, '0');
+                const d = String(hoy.getDate()).padStart(2, '0');
+                selector.value = a + "-" + m + "-" + d;
+            }
+
             await cargarAtenciones();
+
+            // Cargar todos los barberos desde la API
+            const respuestaBarberos = await fetch("/barberos");
+            const barberosData = await respuestaBarberos.json();
+            const barberosMap = {};
+            barberosData.forEach(b => {
+                barberosMap[b.idBarbero] = b;
+            });
 
 
             const cortesHoy =
                 atenciones.filter(
                     function(atencion) {
 
-                        return esDeHoy(
+                        return coincideFecha(
                             atencion.fecha
                         );
 
                     }
                 );
 
+            // Update date display
+            const filtro = obtenerFechaFiltro();
+            const textoFecha = filtro.toLocaleDateString("es-AR", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+            document.getElementById("fechaJefe").textContent = textoFecha;
 
             let facturacion = 0;
-            let facturacionBarberos = 0;
-            let facturacionJefes = 0;
+            let totalComisiones = 0;
+            let gananciaBarberia = 0;
 
 
             cortesHoy.forEach(
@@ -2200,11 +2299,15 @@
                     const precio = Number(atencion.precio || 0);
                     facturacion += precio;
 
-                    if (atencion.barbero && atencion.barbero.esJefe === true) {
-                        facturacionJefes += precio;
-                    } else {
-                        facturacionBarberos += precio;
-                    }
+                    const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
+                        ? atencion.barbero.porcentajeComision 
+                        : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+
+                    const comision = precio * porcentaje;
+                    totalComisiones += comision;
+                    
+                    // Lo que queda para la barbería
+                    gananciaBarberia += (precio - comision);
 
                 }
             );
@@ -2227,10 +2330,7 @@
             document.getElementById(
                 "gananciaBarberosJefe"
             ).textContent =
-                dinero(
-                    facturacionBarberos *
-                    PORCENTAJE_BARBERO
-                );
+                dinero(totalComisiones);
 
 
             const lista =
@@ -2242,19 +2342,17 @@
             lista.innerHTML = "";
 
 
-            const barberos = {
-
-                1: "Leo",
-                2: "Tomas",
-                3: "Nico"
-
-            };
-
-
             Object.keys(
-                barberos
+                barberosMap
             ).forEach(
                 function(id) {
+
+                    const barbero = barberosMap[id];
+                    if (!barbero.activo) return;
+
+                    const porcentajeBarbero = barbero.porcentajeComision || 0.40;
+                    const esJefeBarbero = barbero.esJefe === true;
+                    const icono = esJefeBarbero ? "👑" : "✂";
 
                     const cortes =
                         cortesHoy.filter(
@@ -2292,8 +2390,10 @@
 
 
                     const ganancia =
-                        total *
-                        PORCENTAJE_BARBERO;
+                        total * porcentajeBarbero;
+
+                    const porcentajeTexto = Math.round(porcentajeBarbero * 100);
+                    const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
 
 
                     const card =
@@ -2313,7 +2413,7 @@
                             <div>
 
                                 <h3>
-                                    ✂ ${barberos[id]}
+                                    ${icono} ${barbero.nombre}
                                 </h3>
 
                                 <div class="barbero-info">
@@ -2324,7 +2424,7 @@
                                     Facturación:
                                     ${dinero(total)}
                                     ·
-                                    Comisión:
+                                    ${etiquetaComision} (${porcentajeTexto}%):
                                     ${dinero(ganancia)}
 
                                 </div>
@@ -2336,7 +2436,7 @@
                                 class="boton-detalle"
                                 onclick="verDetalleBarbero(
                                     ${id},
-                                    '${barberos[id]}'
+                                    '${barbero.nombre}'
                                 )"
                             >
                                 VER DETALLE
@@ -2378,7 +2478,7 @@
                 function(atencion) {
 
                     return (
-                        esDeHoy(
+                        coincideFecha(
                             atencion.fecha
                         )
                         &&
@@ -2432,7 +2532,7 @@
                         colspan="7"
                         style="text-align:center; padding:30px;"
                     >
-                        Este barbero no tiene cortes hoy.
+                        Este barbero no tiene cortes en esta fecha.
                     </td>
 
                 </tr>
@@ -2482,14 +2582,206 @@
 
 
     /* ==============================
-       INICIO
+       VOLVER A HOY BARBERO
     ============================== */
 
-    mostrarFecha();
+    function volverAHoyBarbero() {
+        const hoy = new Date();
+        const a = hoy.getFullYear();
+        const m = String(hoy.getMonth() + 1).padStart(2, '0');
+        const d = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById("fechaSelectorBarbero").value = a + "-" + m + "-" + d;
+        // Temporarily override fechaSeleccionada for barbero view
+        fechaSeleccionada = null;
+        cargarResumenBarbero();
+    }
+
+    function cargarResumenBarberoConFecha() {
+        cargarResumenBarbero();
+    }
+
+    /* ==============================
+       EXPORTAR A EXCEL
+    ============================== */
+
+    function exportarExcel() {
+
+        const filtro = obtenerFechaFiltro();
+        const fechaTexto = filtro.toLocaleDateString("es-AR", {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        const fechaArchivo = filtro.toISOString().split('T')[0];
+
+        fetch("/barberos").then(r => r.json()).then(barberosData => {
+            fetch("/atenciones").then(r => r.json()).then(atencionesData => {
+
+                const cortesDia = atencionesData.filter(function(a) {
+                    return coincideFecha(a.fecha);
+                });
+
+                cortesDia.sort(function(a, b) {
+                    var horaA = a.horaLlegada || "00:00";
+                    var horaB = b.horaLlegada || "00:00";
+                    return horaA.localeCompare(horaB);
+                });
+
+                let totalFacturado = 0;
+                let totalComisiones = 0;
+                let totalEfectivo = 0;
+                let totalTransferencia = 0;
+
+                cortesDia.forEach(function(a) {
+                    var precio = Number(a.precio || 0);
+                    totalFacturado += precio;
+                    var pct = a.barbero && a.barbero.porcentajeComision
+                        ? a.barbero.porcentajeComision
+                        : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
+                    totalComisiones += (precio * pct);
+                    if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
+                    else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
+                });
+
+                let totalBarberia = totalFacturado - totalComisiones;
+
+                // Generar CSV compatible con cualquier celular
+                let csv = '';
+                const nombreExport = document.getElementById("nombreApp").textContent || "BARBER SHOP";
+                csv += nombreExport + '\n';
+                csv += 'Reporte de Cortes\n';
+                csv += 'Fecha:,' + fechaTexto + '\n';
+                csv += 'Generado:,' + new Date().toLocaleString("es-AR") + '\n\n';
+                
+                csv += 'RESUMEN GENERAL\n';
+                csv += 'Total de Cortes:,' + cortesDia.length + '\n';
+                csv += 'Total Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\n';
+                csv += 'Comisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\n';
+                csv += 'Ganancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
+                
+                csv += 'FORMAS DE PAGO\n';
+                csv += 'Efectivo:,"$' + totalEfectivo.toLocaleString("es-AR") + '"\n';
+                csv += 'Transferencia:,"$' + totalTransferencia.toLocaleString("es-AR") + '"\n\n';
+                
+                csv += 'DETALLE DE CORTES\n';
+                csv += 'Hora,Barbero,Servicio,Pago,Precio,%,Comisión\n';
+                
+                cortesDia.forEach(function(a) {
+                    const barbero = a.barbero ? a.barbero.nombre : "-";
+                    const servicio = a.servicio ? a.servicio.nombre : "-";
+                    const precio = Number(a.precio || 0);
+                    const pct = a.barbero && a.barbero.porcentajeComision
+                        ? a.barbero.porcentajeComision : 0.40;
+                    const comision = precio * pct;
+                    const hora = a.horaLlegada || "-";
+                    const esJefe = a.barbero && a.barbero.esJefe;
+                    const nombreBarbero = (esJefe ? 'Jefe ' : '') + barbero;
+
+                    csv += hora + ',';
+                    csv += nombreBarbero + ',';
+                    csv += servicio + ',';
+                    csv += (a.formaPago || "-") + ',';
+                    csv += '"$' + precio.toLocaleString("es-AR") + '",';
+                    csv += Math.round(pct * 100) + '%,';
+                    csv += '"$' + comision.toLocaleString("es-AR") + '"\n';
+                });
+                
+                csv += '\n';
+                
+                // Resumen por barbero
+                csv += 'RESUMEN POR BARBERO\n';
+                csv += 'Barbero,Rol,Cortes,Facturado,%,Ganancia\n';
+                
+                const totals = {};
+                cortesDia.forEach(function(a) {
+                    const id = a.barbero ? a.barbero.idBarbero : 0;
+                    if (!totals[id]) {
+                        totals[id] = {
+                            nombre: a.barbero ? a.barbero.nombre : "?",
+                            esJefe: a.barbero ? a.barbero.esJefe : false,
+                            porcentaje: a.barbero && a.barbero.porcentajeComision
+                                ? a.barbero.porcentajeComision : 0.40,
+                            cortes: 0, total: 0, comision: 0
+                        };
+                    }
+                    totals[id].cortes++;
+                    const precio = Number(a.precio || 0);
+                    totals[id].total += precio;
+                    totals[id].comision += precio * totals[id].porcentaje;
+                });
+                
+                Object.keys(totals).sort(function(a, b) {
+                    return totals[a].nombre.localeCompare(totals[b].nombre);
+                }).forEach(function(id) {
+                    const t = totals[id];
+                    const rol = t.esJefe ? "Jefe" : "Barbero";
+                    csv += t.nombre + ',';
+                    csv += rol + ',';
+                    csv += t.cortes + ',';
+                    csv += '"$' + t.total.toLocaleString("es-AR") + '",';
+                    csv += Math.round(t.porcentaje * 100) + '%,';
+                    csv += '"$' + t.comision.toLocaleString("es-AR") + '"\n';
+                });
+
+                // Descargar como CSV (compatible con cualquier celular)
+                const blob = new Blob(['\uFEFF' + csv], {
+                    type: 'text/csv;charset=utf-8;'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "Reporte_Barberia_" + fechaArchivo + ".csv";
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        });
+    }
+
+
+
+    // Cargar nombre y barberos al iniciar
+    async function iniciarApp() {
+        try {
+            const configResp = await fetch("/config");
+            if (configResp.ok) {
+                const config = await configResp.json();
+                const nombre = config.nombre || "Barber Shop";
+                document.getElementById("nombreApp").textContent = nombre;
+                document.getElementById("tituloApp").innerHTML = "✂ " + nombre;
+                document.title = nombre;
+            }
+        } catch(e) {
+            console.log("No se pudo cargar config");
+        }
+
+        try {
+            const barberosResp = await fetch("/barberos");
+            if (barberosResp.ok) {
+                barberosLista = await barberosResp.json();
+                const select = document.getElementById("usuario");
+                barberosLista.forEach(function(b) {
+                    if (b.activo) {
+                        const option = document.createElement("option");
+                        option.value = b.idBarbero;
+                        option.textContent = b.nombre + (b.esJefe ? " (Jefe)" : "");
+                        select.appendChild(option);
+                    }
+                });
+            }
+        } catch(e) {
+            console.log("No se pudieron cargar los barberos");
+        }
+
+        mostrarFecha();
+    }
+
+    iniciarApp();
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2da3adc8839e845',t:'MTc4NzE1Mzc0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2da331b09bfa12e',t:'MTc4NzE1MzQyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
