@@ -254,7 +254,7 @@
 
         .menu {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-bottom: 30px;
         }
@@ -336,7 +336,7 @@
 
         .resumen {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -518,7 +518,7 @@
             }
 
             .resumen {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .formulario {
@@ -1052,12 +1052,29 @@
                 <div class="tarjeta">
 
                     <h3>
-                        Comisiones
+                        Comis. Barberos
                     </h3>
 
                     <div
                         class="numero"
                         id="gananciaBarberosJefe"
+                        style="color: #FF9800;"
+                    >
+                        $0
+                    </div>
+
+                </div>
+
+                <div class="tarjeta">
+
+                    <h3>
+                        Ganancia Jefes
+                    </h3>
+
+                    <div
+                        class="numero"
+                        id="gananciaJefes"
+                        style="color: #9C27B0;"
                     >
                         $0
                     </div>
@@ -2369,6 +2386,8 @@ let vistaSemanal = false; // false = día, true = semana
             let gananciaBarberia = 0;
             let totalEfectivo = 0;
             let totalTransferencia = 0;
+            let comisionesBarberos = 0;
+            let gananciaJefes = 0;
 
 
             cortesHoy.forEach(
@@ -2383,6 +2402,13 @@ let vistaSemanal = false; // false = día, true = semana
 
                     const comision = precio * porcentaje;
                     totalComisiones += comision;
+                    
+                    // Separar comisiones de barberos y jefes
+                    if (atencion.barbero && atencion.barbero.esJefe === true) {
+                        gananciaJefes += comision;
+                    } else {
+                        comisionesBarberos += comision;
+                    }
                     
                     // Lo que queda para la barbería
                     gananciaBarberia += (precio - comision);
@@ -2431,7 +2457,13 @@ let vistaSemanal = false; // false = día, true = semana
             document.getElementById(
                 "gananciaBarberosJefe"
             ).textContent =
-                dinero(totalComisiones);
+                dinero(comisionesBarberos);
+
+
+            document.getElementById(
+                "gananciaJefes"
+            ).textContent =
+                dinero(gananciaJefes);
 
 
             const lista =
@@ -2893,7 +2925,7 @@ let vistaSemanal = false; // false = día, true = semana
 
 </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dc0f6c5b9dc084',t:'MTc4NzE3MjkzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
