@@ -2,7 +2,7 @@ package LujanBarberShop;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.time.ZoneId;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,13 +57,32 @@ public class AtencionController {
 
         Atencion atencion = new Atencion();
 
-        LocalDateTime ahora = LocalDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
+        java.time.ZoneId zonaArg = java.time.ZoneId.of("America/Argentina/Buenos_Aires");
+        LocalDateTime ahora = LocalDateTime.now(zonaArg);
+
         atencion.setBarbero(barbero);
         atencion.setServicio(servicio);
 
-        atencion.setFechaHora(ahora);
-        atencion.setFecha(ahora);
-        atencion.setHoraLlegada(ahora.toLocalTime());
+        // Si se envió una fecha personalizada, usarla
+        if (request.getFecha() != null && !request.getFecha().trim().isEmpty()) {
+            try {
+                java.time.LocalDate fechaPersonalizada = java.time.LocalDate.parse(request.getFecha());
+                LocalDateTime fechaConHora = fechaPersonalizada.atTime(12, 0, 0);
+                atencion.setFechaHora(fechaConHora);
+                atencion.setFecha(fechaConHora);
+                atencion.setHoraLlegada(fechaConHora.toLocalTime());
+            } catch (Exception e) {
+                // Si falla el parseo, usar fecha actual
+                atencion.setFechaHora(ahora);
+                atencion.setFecha(ahora);
+                atencion.setHoraLlegada(ahora.toLocalTime());
+            }
+        } else {
+            // Usar fecha y hora actual
+            atencion.setFechaHora(ahora);
+            atencion.setFecha(ahora);
+            atencion.setHoraLlegada(ahora.toLocalTime());
+        }
 
         atencion.setPrecio(servicio.getPrecio());
 
@@ -116,6 +135,7 @@ public class AtencionController {
         private String descripcion;
         private String formaPago;
         private String nombreTransferencia;
+        private String fecha; // Fecha opcional (YYYY-MM-DD)
 
         public Integer getIdServicio() {
             return idServicio;
@@ -155,6 +175,14 @@ public class AtencionController {
 
         public void setNombreTransferencia(String nombreTransferencia) {
             this.nombreTransferencia = nombreTransferencia;
+        }
+
+        public String getFecha() {
+            return fecha;
+        }
+
+        public void setFecha(String fecha) {
+            this.fecha = fecha;
         }
     }
 }

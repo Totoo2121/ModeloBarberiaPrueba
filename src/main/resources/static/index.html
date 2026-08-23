@@ -27,9 +27,20 @@
             --texto: #ffffff;
             --texto-suave: #999999;
             --texto-medio: #cccccc;
-            --verde: #25c76f;
-            --rojo: #d83a3a;
+            --verde: #81c784;
+            --verde-suave: #2e7d32;
+            --rojo: #e57373;
+            --rojo-suave: #c62828;
+            --azul: #64b5f6;
+            --azul-suave: #1976d2;
+            --naranja: #ffb74d;
+            --naranja-suave: #f57c00;
+            --violeta: #b39ddb;
+            --violeta-suave: #7b1fa2;
             --gris-boton: #2a2a2a;
+            --gris-boton-hover: #424242;
+            --primary: #616161;
+            --primary-hover: #757575;
         }
 
         body {
@@ -38,7 +49,7 @@
             padding: 30px 15px;
             background: var(--fondo);
             color: var(--texto);
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .contenedor {
@@ -66,9 +77,9 @@
             width: 70px;
             height: 70px;
             margin: 0 auto 18px;
-            border-radius: 20px;
-            background: #ffffff;
-            color: #111111;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,7 +102,7 @@
             border: 1px solid var(--borde);
             border-radius: 18px;
             padding: 28px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
 
@@ -148,18 +159,19 @@
             padding: 13px 16px;
             margin-top: 18px;
             border: none;
-            border-radius: 9px;
-            background: white;
-            color: #111;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
             cursor: pointer;
-            transition: .2s;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background: #dddddd;
+            background: var(--primary-hover);
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         button:active {
@@ -168,24 +180,27 @@
 
         .boton-secundario {
             background: var(--gris-boton);
-            color: white;
+            color: var(--texto);
         }
 
         .boton-secundario:hover {
-            background: #353535;
+            background: var(--gris-boton-hover);
         }
 
         .boton-eliminar {
             width: auto;
             margin: 0;
-            padding: 8px 11px;
-            background: var(--rojo);
-            color: white;
+            padding: 8px 14px;
+            background: var(--rojo-suave);
+            color: var(--rojo);
             font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
         }
 
         .boton-eliminar:hover {
-            background: #ef4a4a;
+            background: var(--rojo);
+            color: white;
         }
 
         .boton-detalle {
@@ -193,6 +208,13 @@
             min-width: 135px;
             margin: 0;
             padding: 10px 15px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .boton-detalle:hover {
+            background: var(--primary-hover);
         }
 
 
@@ -342,24 +364,32 @@
         }
 
         .tarjeta {
-            padding: 22px;
+            padding: 24px;
             background: var(--fondo-card);
             border: 1px solid var(--borde);
-            border-radius: 15px;
+            border-radius: 12px;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .tarjeta h3 {
             margin: 0 0 12px;
             color: var(--texto-suave);
-            font-size: 13px;
-            font-weight: normal;
+            font-size: 12px;
+            font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .numero {
-            font-size: 26px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--texto);
         }
 
 
@@ -387,7 +417,7 @@
             overflow-x: auto;
             background: var(--fondo-card);
             border: 1px solid var(--borde);
-            border-radius: 15px;
+            border-radius: 12px;
         }
 
         table {
@@ -398,7 +428,7 @@
 
         th,
         td {
-            padding: 13px 12px;
+            padding: 14px 12px;
             border-bottom: 1px solid var(--borde);
             text-align: left;
             vertical-align: middle;
@@ -406,10 +436,11 @@
 
         th {
             color: var(--texto-suave);
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
-            background: #1b1b1b;
+            background: var(--fondo-input);
+            letter-spacing: 0.5px;
         }
 
         td {
@@ -418,7 +449,7 @@
         }
 
         tbody tr:hover {
-            background: #1d1d1d;
+            background: var(--fondo-input);
         }
 
         tbody tr:last-child td {
@@ -426,15 +457,15 @@
         }
 
         .pago-transferencia {
-            color: #7fdba7;
-            font-weight: bold;
+            color: var(--azul);
+            font-weight: 600;
         }
 
         .transferencia {
             margin-top: 4px;
-            color: #999;
+            color: var(--texto-suave);
             font-size: 12px;
-            font-weight: normal;
+            font-weight: 400;
         }
 
 
@@ -447,7 +478,12 @@
             padding: 20px;
             background: var(--fondo-card);
             border: 1px solid var(--borde);
-            border-radius: 15px;
+            border-radius: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        .barbero-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .barbero-header {
@@ -460,6 +496,7 @@
         .barbero-header h3 {
             margin: 0;
             font-size: 17px;
+            color: var(--texto);
         }
 
         .barbero-info {
@@ -664,10 +701,10 @@
             style="display:none;"
         >
 
-            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('dia')" id="btnDia" style="background: #25c76f;">
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('dia')" id="btnDia" style="background: var(--verde-suave); color: var(--verde);">
                 RESUMEN DEL DÍA
             </button>
-            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('semana')" id="btnSemana" style="background: var(--gris-boton);">
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('semana')" id="btnSemana" style="background: var(--gris-boton); color: var(--texto);">
                 SEMANAL
             </button>
 
@@ -676,11 +713,11 @@
             </button>
 
             <button onclick="mostrarSeccion('miResumen')">
-                MIS CORTES
+                 MIS CORTES
             </button>
 
-            <button onclick="mostrarSeccion('pagoSemanal')" style="background: #FF9800; color: white;">
-                 PAGO SEMANAL
+            <button onclick="mostrarSeccion('pagoSemanal')" style="background: var(--naranja-suave); color: var(--naranja);">
+                💰 PAGO SEMANAL
             </button>
 
             <button
@@ -796,6 +833,15 @@
                         $<span id="precio">0</span>
                     </span>
 
+                </div>
+
+
+                <!-- Selector de fecha para jefes -->
+                <div id="fechaSelectorDiv" style="display: none; margin-top: 20px;">
+                    <label style="color: var(--naranja); font-weight: 600;">
+                        📅 Fecha del corte (opcional)
+                    </label>
+                    <input type="date" id="fechaCorte" style="margin-top: 10px;">
                 </div>
 
 
@@ -1019,7 +1065,7 @@
                 </div>
 
 
-                <div class="tarjeta">
+                <div class="tarjeta" style="border-left: 3px solid var(--verde);">
 
                     <h3>
                         💵 Efectivo
@@ -1028,7 +1074,7 @@
                     <div
                         class="numero"
                         id="totalEfectivo"
-                        style="color: #4CAF50;"
+                        style="color: var(--verde);"
                     >
                         $0
                     </div>
@@ -1036,16 +1082,16 @@
                 </div>
 
 
-                <div class="tarjeta">
+                <div class="tarjeta" style="border-left: 3px solid var(--azul);">
 
                     <h3>
-                        📱 Transferencia
+                         Transferencia
                     </h3>
 
                     <div
                         class="numero"
                         id="totalTransferencia"
-                        style="color: #2196F3;"
+                        style="color: var(--azul);"
                     >
                         $0
                     </div>
@@ -1053,7 +1099,7 @@
                 </div>
 
 
-                <div class="tarjeta">
+                <div class="tarjeta" style="border-left: 3px solid var(--naranja);">
 
                     <h3>
                         Comis. Barberos
@@ -1062,14 +1108,14 @@
                     <div
                         class="numero"
                         id="gananciaBarberosJefe"
-                        style="color: #FF9800;"
+                        style="color: var(--naranja);"
                     >
                         $0
                     </div>
 
                 </div>
 
-                <div class="tarjeta">
+                <div class="tarjeta" style="border-left: 3px solid var(--violeta);">
 
                     <h3>
                         Ganancia Jefes
@@ -1078,7 +1124,7 @@
                     <div
                         class="numero"
                         id="gananciaJefes"
-                        style="color: #9C27B0;"
+                        style="color: var(--violeta);"
                     >
                         $0
                     </div>
@@ -1094,7 +1140,7 @@
                     Detalle por barbero
                 </h2>
 
-                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px;">📊 EXPORTAR EXCEL</button>
+                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px; background: var(--azul-suave); color: var(--azul);">📊 EXPORTAR EXCEL</button>
 
             </div>
 
@@ -1206,16 +1252,16 @@
 
                 </div>
 
-                <div class="tarjeta" style="border: 2px solid #FF9800;">
+                <div class="tarjeta" style="border: 2px solid var(--naranja); background: var(--naranja-suave);">
 
-                    <h3 style="color: #FF9800;">
-                        A PAGAR (50%)
+                    <h3 style="color: var(--naranja);">
+                         A PAGAR (50%)
                     </h3>
 
                     <div
                         class="numero"
                         id="pagoLuciano"
-                        style="color: #FF9800; font-size: 32px;"
+                        style="color: var(--naranja); font-size: 32px;"
                     >
                         $0
                     </div>
@@ -1230,7 +1276,7 @@
 
                 </div>
 
-                <button id="btnMarcarPagado" onclick="marcarPagoSemanal()" style="width: auto; padding: 15px 40px; font-size: 16px; background: #4CAF50; color: white;">
+                <button id="btnMarcarPagado" onclick="marcarPagoSemanal()" style="width: auto; padding: 15px 40px; font-size: 16px; background: var(--verde-suave); color: var(--verde); border: 2px solid var(--verde);">
                     ✅ MARCAR COMO PAGADO
                 </button>
 
@@ -1241,6 +1287,8 @@
                 <h2>
                     Detalle de cortes de Luciano esta semana
                 </h2>
+
+                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px; background: var(--azul-suave); color: var(--azul);"> EXPORTAR</button>
 
             </div>
 
@@ -1453,6 +1501,12 @@ let vistaSemanal = false; // false = día, true = semana
                 "registrar"
             );
 
+        }
+
+
+        // Mostrar selector de fecha solo para jefes
+        if (document.getElementById("fechaSelectorDiv")) {
+            document.getElementById("fechaSelectorDiv").style.display = esJefe ? "block" : "none";
         }
 
 
@@ -1792,6 +1846,15 @@ let vistaSemanal = false; // false = día, true = semana
         }
 
 
+        // Obtener fecha si es jefe y está seleccionada
+        let fechaEnviar = null;
+        if (esJefe) {
+            const fechaInput = document.getElementById("fechaCorte");
+            if (fechaInput && fechaInput.value) {
+                fechaEnviar = fechaInput.value;
+            }
+        }
+
         const datos = {
 
             idServicio:
@@ -1810,6 +1873,11 @@ let vistaSemanal = false; // false = día, true = semana
                 nombreTransferencia
 
         };
+
+        // Agregar fecha si fue seleccionada
+        if (fechaEnviar) {
+            datos.fecha = fechaEnviar;
+        }
 
 
         try {
@@ -1880,7 +1948,12 @@ let vistaSemanal = false; // false = día, true = semana
             ).textContent = "0";
 
 
-            setTimeout(
+            // Limpiar fecha si existe
+            const fechaInput = document.getElementById("fechaCorte");
+            if (fechaInput) fechaInput.value = "";
+
+
+            setTimeout
                 function() {
 
                     document.getElementById(
@@ -3091,10 +3164,10 @@ let vistaSemanal = false; // false = día, true = semana
             const btnPagado = document.getElementById('btnMarcarPagado');
             
             if (yaPagado) {
-                estadoDiv.innerHTML = '<div style="background: #4CAF50; color: white; padding: 20px; border-radius: 10px; font-size: 18px; font-weight: bold;">✅ PAGO REALIZADO</div>';
+                estadoDiv.innerHTML = '<div style="background: var(--verde-suave); color: var(--verde); padding: 20px; border-radius: 10px; font-size: 18px; font-weight: 600; border: 2px solid var(--verde);">✅ PAGO REALIZADO</div>';
                 btnPagado.style.display = 'none';
             } else {
-                estadoDiv.innerHTML = '<div style="background: #FF9800; color: white; padding: 20px; border-radius: 10px; font-size: 18px; font-weight: bold;">⏳ PENDIENTE DE PAGO</div>';
+                estadoDiv.innerHTML = '<div style="background: var(--naranja-suave); color: var(--naranja); padding: 20px; border-radius: 10px; font-size: 18px; font-weight: 600; border: 2px solid var(--naranja);"> PENDIENTE DE PAGO</div>';
                 btnPagado.style.display = 'inline-block';
             }
             
@@ -3123,7 +3196,7 @@ let vistaSemanal = false; // false = día, true = semana
                     <td>${hora}</td>
                     <td>${servicio}</td>
                     <td>${dinero(precio)}</td>
-                    <td style="color: #FF9800; font-weight: bold;">${dinero(comision)}</td>
+                    <td style="color: var(--naranja); font-weight: 600;">${dinero(comision)}</td>
                 `;
                 tabla.appendChild(fila);
             });
@@ -3200,7 +3273,7 @@ let vistaSemanal = false; // false = día, true = semana
 
 </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fcd12afa49eedb',t:'MTc4NzUxNjQxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
 
