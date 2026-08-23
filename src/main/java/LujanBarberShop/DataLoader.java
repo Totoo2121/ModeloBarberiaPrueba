@@ -22,7 +22,6 @@ public class DataLoader implements CommandLineRunner {
         System.out.println(">>> Servicios existentes: " + servicioRepository.count());
 
         if (barberoRepository.count() == 0) {
-            // Barbero Luciano - 50%
             Barbero b1 = new Barbero();
             b1.setNombre("Luciano");
             b1.setActivo(true);
@@ -30,7 +29,6 @@ public class DataLoader implements CommandLineRunner {
             b1.setPorcentajeComision(0.50);
             barberoRepository.save(b1);
 
-            // Jefe Gabi - 100%
             Barbero b2 = new Barbero();
             b2.setNombre("Gabi");
             b2.setActivo(true);
@@ -38,7 +36,6 @@ public class DataLoader implements CommandLineRunner {
             b2.setPorcentajeComision(1.00);
             barberoRepository.save(b2);
 
-            // Jefe Diego - 100%
             Barbero b3 = new Barbero();
             b3.setNombre("Diego");
             b3.setActivo(true);
