@@ -1,24 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
     <title>Barber Shop</title>
-
     <style>
-
-        /* ==============================
-           GENERAL
-        ============================== */
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         :root {
             --fondo: #0d0d0d;
             --fondo-card: #171717;
@@ -42,2008 +30,473 @@
             --primary: #616161;
             --primary-hover: #757575;
         }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            padding: 30px 15px;
-            background: var(--fondo);
-            color: var(--texto);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        .contenedor {
-            width: 100%;
-            max-width: 1050px;
-            margin: auto;
-        }
-
-
-        /* ==============================
-           LOGIN
-        ============================== */
-
-        #pantallaLogin {
-            max-width: 430px;
-            margin: 60px auto;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-icono {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 18px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-        }
-
-        .logo h1 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        .logo p {
-            margin-top: 8px;
-            color: var(--texto-suave);
-            font-size: 15px;
-        }
-
-        .tarjeta-login {
-            background: var(--fondo-card);
-            border: 1px solid var(--borde);
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-
-        /* ==============================
-           INPUTS
-        ============================== */
-
-        label {
-            display: block;
-            margin: 18px 0 8px;
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--texto-medio);
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid var(--borde);
-            border-radius: 9px;
-            outline: none;
-            background: var(--fondo-input);
-            color: white;
-            font-size: 15px;
-            transition: .2s;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: #666;
-            background: #292929;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: #777;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-
-        /* ==============================
-           BOTONES
-        ============================== */
-
-        button {
-            width: 100%;
-            padding: 13px 16px;
-            margin-top: 18px;
-            border: none;
-            border-radius: 10px;
-            background: var(--primary);
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .boton-secundario {
-            background: var(--gris-boton);
-            color: var(--texto);
-        }
-
-        .boton-secundario:hover {
-            background: var(--gris-boton-hover);
-        }
-
-        .boton-eliminar {
-            width: auto;
-            margin: 0;
-            padding: 8px 14px;
-            background: var(--rojo-suave);
-            color: var(--rojo);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 6px;
-        }
-
-        .boton-eliminar:hover {
-            background: var(--rojo);
-            color: white;
-        }
-
-        .boton-detalle {
-            width: auto;
-            min-width: 135px;
-            margin: 0;
-            padding: 10px 15px;
-            background: var(--primary);
-            color: white;
-            border-radius: 8px;
-        }
-
-        .boton-detalle:hover {
-            background: var(--primary-hover);
-        }
-
-
-        /* ==============================
-           MENSAJES
-        ============================== */
-
-        .mensaje {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--verde);
-        }
-
-
-        /* ==============================
-           APP
-        ============================== */
-
-        #app {
-            display: none;
-        }
-
-        .encabezado {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .encabezado h1 {
-            margin: 0 0 7px;
-            font-size: 30px;
-        }
-
-        .encabezado h2 {
-            margin-bottom: 8px;
-        }
-
-        .fecha {
-            color: var(--texto-suave);
-            text-transform: capitalize;
-            font-size: 14px;
-        }
-
-        .usuario-actual {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 7px 12px;
-            border-radius: 20px;
-            background: #1d1d1d;
-            color: var(--texto-medio);
-            font-size: 13px;
-        }
-
-
-        /* ==============================
-           MENÚ
-        ============================== */
-
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .menu button {
-            margin: 0;
-        }
-
-
-        /* ==============================
-           SECCIONES
-        ============================== */
-
-        .seccion {
-            display: none;
-        }
-
-        .seccion.activa {
-            display: block;
-            animation: aparecer .2s ease;
-        }
-
-        @keyframes aparecer {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-
-        /* ==============================
-           FORMULARIO
-        ============================== */
-
-        .formulario {
-            max-width: 620px;
-            margin: auto;
-            padding: 25px;
-            background: var(--fondo-card);
-            border: 1px solid var(--borde);
-            border-radius: 16px;
-        }
-
-        .precio {
-            margin-top: 22px;
-            padding: 20px;
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-            background: #202020;
-            text-align: center;
-        }
-
-        .precio-label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--texto-suave);
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .precio-valor {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        #transferenciaDiv {
-            display: none;
-        }
-
-
-        /* ==============================
-           RESUMEN
-        ============================== */
-
-        .resumen {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .tarjeta {
-            padding: 24px;
-            background: var(--fondo-card);
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .tarjeta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .tarjeta h3 {
-            margin: 0 0 12px;
-            color: var(--texto-suave);
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .numero {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--texto);
-        }
-
-
-        /* ==============================
-           TITULOS
-        ============================== */
-
-        .titulo-seccion {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .titulo-seccion h2 {
-            margin: 0;
-        }
-
-
-        /* ==============================
-           TABLAS
-        ============================== */
-
-        .tabla-contenedor {
-            overflow-x: auto;
-            background: var(--fondo-card);
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 720px;
-        }
-
-        th,
-        td {
-            padding: 14px 12px;
-            border-bottom: 1px solid var(--borde);
-            text-align: left;
-            vertical-align: middle;
-        }
-
-        th {
-            color: var(--texto-suave);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            background: var(--fondo-input);
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            color: var(--texto-medio);
-            font-size: 13px;
-        }
-
-        tbody tr:hover {
-            background: var(--fondo-input);
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .pago-transferencia {
-            color: var(--azul);
-            font-weight: 600;
-        }
-
-        .transferencia {
-            margin-top: 4px;
-            color: var(--texto-suave);
-            font-size: 12px;
-            font-weight: 400;
-        }
-
-
-        /* ==============================
-           BARBEROS
-        ============================== */
-
-        .barbero-card {
-            margin-bottom: 12px;
-            padding: 20px;
-            background: var(--fondo-card);
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-            transition: box-shadow 0.2s;
-        }
-
-        .barbero-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-        .barbero-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .barbero-header h3 {
-            margin: 0;
-            font-size: 17px;
-            color: var(--texto);
-        }
-
-        .barbero-info {
-            margin-top: 8px;
-            color: var(--texto-suave);
-            font-size: 13px;
-        }
-
-        .sin-cortes {
-            padding: 25px;
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-            background: var(--fondo-card);
-            color: var(--texto-suave);
-            text-align: center;
-        }
-
-
-        /* ==============================
-           DETALLE JEFE
-        ============================== */
-
-        #detalleJefe {
-            margin-top: 25px;
-        }
-
-        #tituloDetalle {
-            margin-bottom: 15px;
-        }
-
-
-        /* ==============================
-           RESPONSIVE
-        ============================== */
-
+        body { margin: 0; min-height: 100vh; padding: 30px 15px; background: var(--fondo); color: var(--texto); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .contenedor { width: 100%; max-width: 1050px; margin: auto; }
+        #pantallaLogin { max-width: 430px; margin: 60px auto; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo-icono { width: 70px; height: 70px; margin: 0 auto 18px; border-radius: 50%; background: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+        .logo h1 { margin: 0; font-size: 30px; }
+        .logo p { margin-top: 8px; color: var(--texto-suave); font-size: 15px; }
+        .tarjeta-login { background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 18px; padding: 28px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+        label { display: block; margin: 18px 0 8px; font-size: 14px; font-weight: bold; color: var(--texto-medio); }
+        input, select, textarea { width: 100%; padding: 13px 14px; border: 1px solid var(--borde); border-radius: 9px; outline: none; background: var(--fondo-input); color: white; font-size: 15px; transition: .2s; }
+        input:focus, select:focus, textarea:focus { border-color: #666; background: #292929; }
+        input::placeholder, textarea::placeholder { color: #777; }
+        textarea { min-height: 100px; resize: vertical; }
+        button { width: 100%; padding: 13px 16px; margin-top: 18px; border: none; border-radius: 10px; background: var(--primary); color: white; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        button:active { transform: translateY(0); }
+        .boton-secundario { background: var(--gris-boton); color: var(--texto); }
+        .boton-secundario:hover { background: var(--gris-boton-hover); }
+        .boton-eliminar { width: auto; margin: 0; padding: 8px 14px; background: var(--rojo-suave); color: var(--rojo); font-size: 12px; font-weight: 600; border-radius: 6px; }
+        .boton-eliminar:hover { background: var(--rojo); color: white; }
+        .boton-detalle { width: auto; min-width: 135px; margin: 0; padding: 10px 15px; background: var(--primary); color: white; border-radius: 8px; }
+        .boton-detalle:hover { background: var(--primary-hover); }
+        .mensaje { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; color: var(--verde); }
+        #app { display: none; }
+        .encabezado { text-align: center; margin-bottom: 28px; }
+        .encabezado h1 { margin: 0 0 7px; font-size: 30px; }
+        .encabezado h2 { margin-bottom: 8px; }
+        .fecha { color: var(--texto-suave); text-transform: capitalize; font-size: 14px; }
+        .usuario-actual { display: inline-block; margin-top: 12px; padding: 7px 12px; border-radius: 20px; background: #1d1d1d; color: var(--texto-medio); font-size: 13px; }
+        .menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 30px; }
+        .menu button { margin: 0; }
+        .seccion { display: none; }
+        .seccion.activa { display: block; animation: aparecer .2s ease; }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .formulario { max-width: 620px; margin: auto; padding: 25px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 16px; }
+        .precio { margin-top: 22px; padding: 20px; border: 1px solid var(--borde); border-radius: 12px; background: #202020; text-align: center; }
+        .precio-label { display: block; margin-bottom: 5px; color: var(--texto-suave); font-size: 12px; text-transform: uppercase; }
+        .precio-valor { font-size: 30px; font-weight: bold; }
+        #transferenciaDiv, #fechaSelectorDiv, #barberoSelectorDiv { display: none; }
+        .resumen { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
+        .tarjeta { padding: 24px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .tarjeta:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .tarjeta h3 { margin: 0 0 12px; color: var(--texto-suave); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .numero { font-size: 28px; font-weight: 600; color: var(--texto); }
+        .titulo-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .titulo-seccion h2 { margin: 0; }
+        .tabla-contenedor { overflow-x: auto; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 14px 12px; border-bottom: 1px solid var(--borde); text-align: left; vertical-align: middle; }
+        th { color: var(--texto-suave); font-size: 11px; font-weight: 600; text-transform: uppercase; background: var(--fondo-input); letter-spacing: 0.5px; }
+        td { color: var(--texto-medio); font-size: 13px; }
+        tbody tr:hover { background: var(--fondo-input); }
+        tbody tr:last-child td { border-bottom: none; }
+        .pago-transferencia { color: var(--azul); font-weight: 600; }
+        .transferencia { margin-top: 4px; color: var(--texto-suave); font-size: 12px; font-weight: 400; }
+        .barbero-card { margin-bottom: 12px; padding: 20px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; transition: box-shadow 0.2s; }
+        .barbero-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+        .barbero-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        .barbero-header h3 { margin: 0; font-size: 17px; color: var(--texto); }
+        .barbero-info { margin-top: 8px; color: var(--texto-suave); font-size: 13px; }
+        .sin-cortes { padding: 25px; border: 1px solid var(--borde); border-radius: 12px; background: var(--fondo-card); color: var(--texto-suave); text-align: center; }
+        #detalleJefe { margin-top: 25px; }
+        #tituloDetalle { margin-bottom: 15px; }
         @media (max-width: 700px) {
-
-            body {
-                padding: 20px 10px;
-            }
-
-            #pantallaLogin {
-                margin: 30px auto;
-            }
-
-            .logo h1 {
-                font-size: 25px;
-            }
-
-            .encabezado h1 {
-                font-size: 25px;
-            }
-
-            .menu {
-                grid-template-columns: 1fr;
-            }
-
-            .resumen {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .formulario {
-                padding: 20px;
-            }
-
-            .barbero-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .boton-detalle {
-                width: 100%;
-            }
-
+            body { padding: 20px 10px; }
+            #pantallaLogin { margin: 30px auto; }
+            .logo h1, .encabezado h1 { font-size: 25px; }
+            .menu, .resumen { grid-template-columns: 1fr; }
+            .formulario { padding: 20px; }
+            .barbero-header { flex-direction: column; align-items: stretch; }
+            .boton-detalle { width: 100%; }
         }
-
     </style>
 </head>
 
-
 <body>
-
 <div class="contenedor">
-
-
-    <!-- ==============================
-         LOGIN
-    ============================== -->
-
     <section id="pantallaLogin">
-
         <div class="logo">
-
-            <div class="logo-icono">
-                ✂
-            </div>
-
+            <div class="logo-icono">✂</div>
             <h1 id="nombreApp">Barber Shop</h1>
-
             <p>Control de cortes</p>
-
         </div>
-
-
         <div class="tarjeta-login">
-
-            <label for="usuario">
-                Usuario
-            </label>
-
-            <select id="usuario">
-
-                <option value="">
-                    Seleccionar usuario
-                </option>
-
-            </select>
-
-
-            <label for="password">
-                Contraseña
-            </label>
-
-            <input
-                type="password"
-                id="password"
-                placeholder="Ingresá tu contraseña"
-            >
-
-
-            <button onclick="iniciarSesion()">
-                INGRESAR
-            </button>
-
-
-            <div
-                id="mensajeLogin"
-                class="mensaje"
-            ></div>
-
+            <label for="usuario">Usuario</label>
+            <select id="usuario"><option value="">Seleccionar usuario</option></select>
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Ingresá tu contraseña">
+            <button onclick="iniciarSesion()">INGRESAR</button>
+            <div id="mensajeLogin" class="mensaje"></div>
         </div>
-
     </section>
-
-
-    <!-- ==============================
-         APLICACIÓN
-    ============================== -->
 
     <section id="app">
-
-
         <div class="encabezado">
-
-            <h1 id="tituloApp">
-                ✂ Barber Shop
-            </h1>
-
-            <div
-                class="fecha"
-                id="fecha"
-            ></div>
-
-            <div
-                class="usuario-actual"
-                id="usuarioActual"
-            ></div>
-
+            <h1 id="tituloApp">✂ Barber Shop</h1>
+            <div class="fecha" id="fecha"></div>
+            <div class="usuario-actual" id="usuarioActual"></div>
         </div>
 
-
-        <!-- MENÚ BARBERO -->
-
-        <div
-            class="menu"
-            id="menuBarbero"
-        >
-
-            <button onclick="mostrarSeccion('registrar')">
-                + AGREGAR CORTE
-            </button>
-
-            <button onclick="mostrarSeccion('miResumen')">
-                MI RESUMEN
-            </button>
-
-            <button
-                class="boton-secundario"
-                onclick="cerrarSesion()"
-            >
-                CERRAR SESIÓN
-            </button>
-
+        <div class="menu" id="menuBarbero">
+            <button onclick="mostrarSeccion('registrar')">+ AGREGAR CORTE</button>
+            <button onclick="mostrarSeccion('miResumen')">MI RESUMEN</button>
+            <button class="boton-secundario" onclick="cerrarSesion()">CERRAR SESIÓN</button>
         </div>
 
-
-        <!-- MENÚ JEFE -->
-
-        <div
-            class="menu"
-            id="menuJefe"
-            style="display:none;"
-        >
-
-            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('dia')" id="btnDia" style="background: var(--verde-suave); color: var(--verde);">
-                RESUMEN DEL DÍA
-            </button>
-            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('semana')" id="btnSemana" style="background: var(--gris-boton); color: var(--texto);">
-                SEMANAL
-            </button>
-
-            <button onclick="mostrarSeccion('registrar')">
-                + AGREGAR CORTE
-            </button>
-
-            <button onclick="mostrarSeccion('miResumen')">
-                 MIS CORTES
-            </button>
-
-            <button onclick="mostrarSeccion('pagoSemanal')" style="background: var(--naranja-suave); color: var(--naranja);">
-                💰 PAGO SEMANAL
-            </button>
-
-            <button
-                class="boton-secundario"
-                onclick="cerrarSesion()"
-            >
-                CERRAR SESIÓN
-            </button>
-
+        <div class="menu" id="menuJefe" style="display:none;">
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('dia')" id="btnDia" style="background: var(--verde-suave); color: var(--verde);">RESUMEN DEL DÍA</button>
+            <button onclick="mostrarSeccion('resumenJefe'); cambiarVista('semana')" id="btnSemana" style="background: var(--gris-boton); color: var(--texto);">SEMANAL</button>
+            <button onclick="mostrarSeccion('registrar')">+ AGREGAR CORTE</button>
+            <button onclick="mostrarSeccion('miResumen')">MIS CORTES</button>
+            <button onclick="mostrarSeccion('pagoSemanal')" style="background: var(--naranja-suave); color: var(--naranja);">💰 PAGO SEMANAL</button>
+            <button class="boton-secundario" onclick="cerrarSesion()">CERRAR SESIÓN</button>
         </div>
 
-
-        <!-- ==============================
-             REGISTRAR CORTE
-        ============================== -->
-
-        <section
-            id="registrar"
-            class="seccion"
-        >
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    Registrar corte
-                </h2>
-
-            </div>
-
-
+        <section id="registrar" class="seccion">
+            <div class="titulo-seccion"><h2>Registrar corte</h2></div>
             <div class="formulario">
-
-
-                <label>
-                    Barbero
-                </label>
-
-                <input
-                    type="text"
-                    id="barberoCorte"
-                    readonly
-                >
-
-
-                <label for="servicio">
-                    Servicio
-                </label>
-
-                <select
-                    id="servicio"
-                    onchange="actualizarPrecio()"
-                >
-
-                    <option value="">
-                        Seleccionar servicio
-                    </option>
-
+                <label id="labelBarberoCorte">Barbero</label>
+                <input type="text" id="barberoCorte" readonly>
+                <div id="barberoSelectorDiv">
+                    <label for="barberoSelect">Asignar a barbero</label>
+                    <select id="barberoSelect"><option value="">Seleccionar barbero</option></select>
+                </div>
+                <div id="fechaSelectorDiv">
+                    <label for="fechaCorte">📅 Fecha del corte</label>
+                    <input type="date" id="fechaCorte">
+                </div>
+                <label for="servicio">Servicio</label>
+                <select id="servicio" onchange="actualizarPrecio()"><option value="">Seleccionar servicio</option></select>
+                <label for="descripcion">Descripción del corte</label>
+                <textarea id="descripcion" placeholder="Ej: Degradé bajo, máquina 1 a los costados..."></textarea>
+                <label for="formaPago">Forma de pago</label>
+                <select id="formaPago" onchange="mostrarTransferencia()">
+                    <option value="EFECTIVO">Efectivo</option>
+                    <option value="TRANSFERENCIA">Transferencia</option>
                 </select>
-
-
-                <label for="descripcion">
-                    Descripción del corte
-                </label>
-
-                <textarea
-                    id="descripcion"
-                    placeholder="Ej: Degradé bajo, máquina 1 a los costados..."
-                ></textarea>
-
-
-                <label for="formaPago">
-                    Forma de pago
-                </label>
-
-                <select
-                    id="formaPago"
-                    onchange="mostrarTransferencia()"
-                >
-
-                    <option value="EFECTIVO">
-                        Efectivo
-                    </option>
-
-                    <option value="TRANSFERENCIA">
-                        Transferencia
-                    </option>
-
-                </select>
-
-
                 <div id="transferenciaDiv">
-
-                    <label>
-                        Nombre de la transferencia
-                    </label>
-
-                    <input
-                        type="text"
-                        id="nombreTransferencia"
-                        placeholder="Ej: Juan Pérez"
-                    >
-
+                    <label>Nombre de la transferencia</label>
+                    <input type="text" id="nombreTransferencia" placeholder="Ej: Juan Pérez">
                 </div>
-
-
                 <div class="precio">
-
-                    <span class="precio-label">
-                        Total
-                    </span>
-
-                    <span class="precio-valor">
-                        $<span id="precio">0</span>
-                    </span>
-
+                    <span class="precio-label">Total</span>
+                    <span class="precio-valor">$<span id="precio">0</span></span>
                 </div>
-
-
-                <!-- Selector de fecha para jefes -->
-                <div id="fechaSelectorDiv" style="display: none; margin-top: 20px;">
-                    <label style="color: var(--naranja); font-weight: 600;">
-                        📅 Fecha del corte (opcional)
-                    </label>
-                    <input type="date" id="fechaCorte" style="margin-top: 10px;">
-                </div>
-
-
-                <button onclick="registrarCorte()">
-                    REGISTRAR CORTE
-                </button>
-
-
-                <button
-                    class="boton-secundario"
-                    onclick="mostrarInicio()"
-                >
-                    VOLVER
-                </button>
-
-
-                <div
-                    id="mensajeCorte"
-                    class="mensaje"
-                ></div>
-
+                <button onclick="registrarCorte()">REGISTRAR CORTE</button>
+                <button class="boton-secundario" onclick="mostrarInicio()">VOLVER</button>
+                <div id="mensajeCorte" class="mensaje"></div>
             </div>
-
         </section>
 
-
-        <!-- ==============================
-             MI RESUMEN
-        ============================== -->
-
-        <section
-            id="miResumen"
-            class="seccion"
-        >
-
+        <section id="miResumen" class="seccion">
             <div class="encabezado">
-
-                <h2>
-                    <span id="tituloMiResumen">Mi resumen</span>
-                </h2>
-
-                <div
-                    class="fecha"
-                    id="fechaResumen"
-                ></div>
-
+                <h2><span id="tituloMiResumen">Mi resumen</span></h2>
+                <div class="fecha" id="fechaResumen"></div>
             </div>
-
-
-            <!-- SELECTOR DE FECHA BARBERO -->
             <div style="text-align:center; margin-bottom:25px;">
                 <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
-                <input 
-                    type="date" 
-                    id="fechaSelectorBarbero" 
-                    style="width:auto; display:inline-block; padding:10px 15px;"
-                    onchange="cargarResumenBarberoConFecha()"
-                >
+                <input type="date" id="fechaSelectorBarbero" style="width:auto; display:inline-block; padding:10px 15px;" onchange="cargarResumenBarberoConFecha()">
                 <button onclick="volverAHoyBarbero()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
             </div>
-
-
             <div class="resumen">
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Mis cortes
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="cantidadCortes"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Total generado
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="totalGenerado"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Mi comisión
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="miGanancia"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
+                <div class="tarjeta"><h3>Mis cortes</h3><div class="numero" id="cantidadCortes">0</div></div>
+                <div class="tarjeta"><h3>Total generado</h3><div class="numero" id="totalGenerado">$0</div></div>
+                <div class="tarjeta"><h3>Mi comisión</h3><div class="numero" id="miGanancia">$0</div></div>
             </div>
-
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    Mis cortes de hoy
-                </h2>
-
-            </div>
-
-
+            <div class="titulo-seccion"><h2>Mis cortes de hoy</h2></div>
             <div class="tabla-contenedor">
-
                 <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Hora</th>
-                            <th>Servicio</th>
-                            <th>Descripción</th>
-                            <th>Pago</th>
-                            <th>Precio</th>
-                            <th>Comisión</th>
-                            <th>Acción</th>
-
-                        </tr>
-
-                    </thead>
-
-
+                    <thead><tr><th>Hora</th><th>Servicio</th><th>Descripción</th><th>Pago</th><th>Precio</th><th>Comisión</th><th>Acción</th></tr></thead>
                     <tbody id="tablaCortes"></tbody>
-
                 </table>
-
             </div>
-
         </section>
 
-
-        <!-- ==============================
-             RESUMEN JEFE
-        ============================== -->
-
-        <section
-            id="resumenJefe"
-            class="seccion"
-        >
-
+        <section id="resumenJefe" class="seccion">
             <div class="encabezado">
-
-                <h2 id="tituloResumen">
-                    Resumen del día
-                </h2>
-
-                <div
-                    class="fecha"
-                    id="fechaJefe"
-                ></div>
-
+                <h2 id="tituloResumen">Resumen del día</h2>
+                <div class="fecha" id="fechaJefe"></div>
             </div>
-
-
-            <!-- SELECTOR DE FECHA -->
-            <div style="text-align:center; margin-bottom:25px;">
+            <div id="fechaSelectorContainer" style="text-align:center; margin-bottom:25px;">
                 <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
-                <input 
-                    type="date" 
-                    id="fechaSelector" 
-                    style="width:auto; display:inline-block; padding:10px 15px;"
-                    onchange="cargarResumenJefeConFecha()"
-                >
+                <input type="date" id="fechaSelector" style="width:auto; display:inline-block; padding:10px 15px;" onchange="cargarResumenJefeConFecha()">
                 <button onclick="volverAHoy()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
             </div>
-
-
             <div class="resumen">
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Cortes
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="totalCortesJefe"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Facturación
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="facturacionJefe"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta" style="border-left: 3px solid var(--verde);">
-
-                    <h3>
-                        💵 Efectivo
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="totalEfectivo"
-                        style="color: var(--verde);"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta" style="border-left: 3px solid var(--azul);">
-
-                    <h3>
-                         Transferencia
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="totalTransferencia"
-                        style="color: var(--azul);"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-
-                <div class="tarjeta" style="border-left: 3px solid var(--naranja);">
-
-                    <h3>
-                        Comis. Barberos
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="gananciaBarberosJefe"
-                        style="color: var(--naranja);"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-                <div class="tarjeta" style="border-left: 3px solid var(--violeta);">
-
-                    <h3>
-                        Ganancia Jefes
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="gananciaJefes"
-                        style="color: var(--violeta);"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
+                <div class="tarjeta"><h3>Cortes</h3><div class="numero" id="totalCortesJefe">0</div></div>
+                <div class="tarjeta"><h3>Facturación</h3><div class="numero" id="facturacionJefe">$0</div></div>
+                <div class="tarjeta"><h3>💵 Efectivo</h3><div class="numero" id="totalEfectivo" style="color: var(--verde);">$0</div></div>
+                <div class="tarjeta"><h3>📱 Transferencia</h3><div class="numero" id="totalTransferencia" style="color: var(--azul);">$0</div></div>
+                <div class="tarjeta"><h3>Comis. Barberos</h3><div class="numero" id="gananciaBarberosJefe" style="color: var(--naranja);">$0</div></div>
+                <div class="tarjeta"><h3>Ganancia Jefes</h3><div class="numero" id="gananciaJefes" style="color: var(--violeta);">$0</div></div>
             </div>
-
-
             <div class="titulo-seccion">
-
-                <h2>
-                    Detalle por barbero
-                </h2>
-
-                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px; background: var(--azul-suave); color: var(--azul);">📊 EXPORTAR EXCEL</button>
-
+                <h2>Detalle por barbero</h2>
+                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px;">📊 EXPORTAR</button>
             </div>
-
-
             <div id="listaBarberos"></div>
-
-
-            <div
-                id="detalleJefe"
-                style="display:none;"
-            >
-
-                <h2 id="tituloDetalle">
-                    Detalle
-                </h2>
-
-
+            <div id="detalleJefe" style="display:none;">
+                <h2 id="tituloDetalle">Detalle</h2>
                 <div class="tabla-contenedor">
-
                     <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Hora</th>
-                                <th>Servicio</th>
-                                <th>Descripción</th>
-                                <th>Pago</th>
-                                <th>Precio</th>
-                                <th>Comisión</th>
-                                <th>Acción</th>
-
-                            </tr>
-
-                        </thead>
-
-
+                        <thead><tr><th>Hora</th><th>Servicio</th><th>Descripción</th><th>Pago</th><th>Precio</th><th>Comisión</th><th>Acción</th></tr></thead>
                         <tbody id="tablaDetalleJefe"></tbody>
-
                     </table>
-
                 </div>
-
-
-                <button onclick="cerrarDetalleJefe()">
-                    VOLVER AL RESUMEN
-                </button>
-
+                <button onclick="cerrarDetalleJefe()">VOLVER AL RESUMEN</button>
             </div>
-
         </section>
 
-
-        </section>
-
-
-        <!-- ==============================
-             PAGO SEMANAL
-        ============================== -->
-
-        <section
-            id="pagoSemanal"
-            class="seccion"
-        >
-
+        <section id="pagoSemanal" class="seccion">
             <div class="encabezado">
-
-                <h2>
-                    💰 Pago Semanal a Barbero
-                </h2>
-
-                <div
-                    class="fecha"
-                    id="fechaPago"
-                ></div>
-
+                <h2>💰 Pago Semanal a Barbero</h2>
+                <div class="fecha" id="fechaPago"></div>
             </div>
-
             <div class="resumen">
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Cortes de la semana
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="cortesSemana"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-                <div class="tarjeta">
-
-                    <h3>
-                        Total facturado
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="facturadoSemana"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
-                <div class="tarjeta" style="border: 2px solid var(--naranja); background: var(--naranja-suave);">
-
-                    <h3 style="color: var(--naranja);">
-                         A PAGAR (50%)
-                    </h3>
-
-                    <div
-                        class="numero"
-                        id="pagoLuciano"
-                        style="color: var(--naranja); font-size: 32px;"
-                    >
-                        $0
-                    </div>
-
-                </div>
-
+                <div class="tarjeta"><h3>Cortes de la semana</h3><div class="numero" id="cortesSemana">0</div></div>
+                <div class="tarjeta"><h3>Total facturado</h3><div class="numero" id="facturadoSemana">$0</div></div>
+                <div class="tarjeta" style="border: 2px solid var(--naranja);"><h3 style="color: var(--naranja);">A PAGAR (50%)</h3><div class="numero" id="pagoLuciano" style="color: var(--naranja); font-size: 32px;">$0</div></div>
             </div>
-
             <div style="text-align: center; margin: 30px 0;">
-
-                <div id="estadoPago" style="padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-
-                </div>
-
-                <button id="btnMarcarPagado" onclick="marcarPagoSemanal()" style="width: auto; padding: 15px 40px; font-size: 16px; background: var(--verde-suave); color: var(--verde); border: 2px solid var(--verde);">
-                    ✅ MARCAR COMO PAGADO
-                </button>
-
+                <div id="estadoPago" style="padding: 20px; border-radius: 10px; margin-bottom: 20px;"></div>
+                <button id="btnMarcarPagado" onclick="marcarPagoSemanal()" style="width: auto; padding: 15px 40px; font-size: 16px;">✅ MARCAR COMO PAGADO</button>
             </div>
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    Detalle de cortes de Luciano esta semana
-                </h2>
-
-                <button onclick="exportarExcel()" style="width:auto; padding:8px 15px; font-size:12px; background: var(--azul-suave); color: var(--azul);"> EXPORTAR</button>
-
-            </div>
-
+            <div class="titulo-seccion"><h2>Detalle de cortes de Luciano esta semana</h2></div>
             <div class="tabla-contenedor">
-
                 <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Servicio</th>
-                            <th>Precio</th>
-                            <th>Comisión (50%)</th>
-
-                        </tr>
-
-                    </thead>
-
+                    <thead><tr><th>Fecha</th><th>Hora</th><th>Servicio</th><th>Precio</th><th>Comisión (50%)</th></tr></thead>
                     <tbody id="tablaPagoSemanal"></tbody>
-
                 </table>
-
             </div>
-
         </section>
     </section>
-
 </div>
 
-
 <script>
-
-    /* ==============================
-       VARIABLES
-    ============================== */
-
     let usuarioActual = null;
     let esJefe = false;
-
     let atenciones = [];
     let servicios = [];
     let barberosLista = [];
-let vistaSemanal = false; // false = día, true = semana
-
+    let vistaSemanal = false;
     const PORCENTAJE_BARBERO = 0.50;
     const PORCENTAJE_JEFE = 1.00;
 
-
-    /* ==============================
-       DINERO
-    ============================== */
-
-    function dinero(valor) {
-
-        return "$ " +
-            Number(valor || 0)
-                .toLocaleString("es-AR");
-
-    }
-
-
-    /* ==============================
-       FECHA
-    ============================== */
+    function dinero(valor) { return "$ " + Number(valor || 0).toLocaleString("es-AR"); }
 
     function mostrarFecha() {
-
         const hoy = new Date();
-
-        const texto =
-            hoy.toLocaleDateString(
-                "es-AR",
-                {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                }
-            );
-
-        document.getElementById("fecha")
-            .textContent = texto;
-
-        document.getElementById("fechaResumen")
-            .textContent = texto;
-
-        document.getElementById("fechaJefe")
-            .textContent = texto;
-
+        const texto = hoy.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+        document.getElementById("fecha").textContent = texto;
+        document.getElementById("fechaResumen").textContent = texto;
+        document.getElementById("fechaJefe").textContent = texto;
     }
 
-
-    /* ==============================
-       LOGIN
-    ============================== */
-
     function iniciarSesion() {
+        const usuario = document.getElementById("usuario").value;
+        const password = document.getElementById("password").value;
+        const mensaje = document.getElementById("mensajeLogin");
 
-        const usuario =
-            document.getElementById("usuario").value;
+        if (!usuario) { mensaje.textContent = "Seleccioná un usuario"; return; }
 
-        const password =
-            document.getElementById("password").value;
-
-        const mensaje =
-            document.getElementById("mensajeLogin");
-
-
-        if (!usuario) {
-
-            mensaje.textContent =
-                "Seleccioná un usuario";
-
-            return;
-        }
-
-
-        // Buscar el barbero en la lista cargada
         usuarioActual = null;
         for (var i = 0; i < barberosLista.length; i++) {
-            if (String(barberosLista[i].idBarbero) === usuario) {
-                usuarioActual = barberosLista[i];
-                break;
-            }
+            if (String(barberosLista[i].idBarbero) === usuario) { usuarioActual = barberosLista[i]; break; }
         }
+        if (!usuarioActual) { mensaje.textContent = "Usuario no encontrado"; return; }
 
-        if (!usuarioActual) {
-            mensaje.textContent = "Usuario no encontrado";
-            return;
-        }
-
-
-        // Validar contraseña según el rol
         let passwordCorrecta = false;
-        if (usuarioActual.esJefe) {
-            // Jefes: contraseña "Blessed" (case-insensitive)
-            passwordCorrecta = password.toLowerCase() === "blessed";
-        } else {
-            // Barberos: contraseña "1234"
-            passwordCorrecta = password === "1234";
-        }
+        if (usuarioActual.esJefe) passwordCorrecta = password.toLowerCase() === "blessed";
+        else passwordCorrecta = password === "1234";
 
-
-        if (!passwordCorrecta) {
-
-            mensaje.textContent =
-                usuarioActual.esJefe ? "Contraseña de admin incorrecta" : "Contraseña incorrecta";
-
-            return;
-        }
+        if (!passwordCorrecta) { mensaje.textContent = usuarioActual.esJefe ? "Contraseña de admin incorrecta" : "Contraseña incorrecta"; return; }
 
         esJefe = usuarioActual.esJefe === true;
 
+        document.getElementById("pantallaLogin").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        document.getElementById("usuarioActual").textContent = "Usuario: " + usuarioActual.nombre;
 
-        document.getElementById(
-            "pantallaLogin"
-        ).style.display = "none";
-
-
-        document.getElementById(
-            "app"
-        ).style.display = "block";
-
-
-        document.getElementById(
-            "usuarioActual"
-        ).textContent =
-            "Usuario: " +
-            usuarioActual.nombre;
-
-
-        document.getElementById(
-            "barberoCorte"
-        ).value =
-            usuarioActual.nombre;
-
+        // Mostrar/ocultar selectores según si es jefe
+        const barberoSelectDiv = document.getElementById("barberoSelectorDiv");
+        const barberoInput = document.getElementById("barberoCorte");
+        const labelBarbero = document.getElementById("labelBarberoCorte");
+        const fechaSelectDiv = document.getElementById("fechaSelectorDiv");
 
         if (esJefe) {
+            barberoSelectDiv.style.display = "block";
+            barberoInput.style.display = "none";
+            labelBarbero.style.display = "none";
+            fechaSelectDiv.style.display = "block";
 
-            document.getElementById(
-                "menuBarbero"
-            ).style.display = "none";
-
-
-            document.getElementById(
-                "menuJefe"
-            ).style.display = "grid";
-
-
-            mostrarSeccion(
-                "resumenJefe"
-            );
-
+            const barberoSelect = document.getElementById("barberoSelect");
+            barberoSelect.innerHTML = '<option value="">Seleccionar barbero</option>';
+            barberosLista.forEach(function(b) {
+                if (b.activo) {
+                    const option = document.createElement("option");
+                    option.value = b.idBarbero;
+                    option.textContent = b.nombre + (b.esJefe ? " (Admin)" : "");
+                    barberoSelect.appendChild(option);
+                }
+            });
         } else {
-
-            document.getElementById(
-                "menuBarbero"
-            ).style.display = "grid";
-
-
-            document.getElementById(
-                "menuJefe"
-            ).style.display = "none";
-
-
-            mostrarSeccion(
-                "registrar"
-            );
-
+            barberoSelectDiv.style.display = "none";
+            barberoInput.style.display = "block";
+            labelBarbero.style.display = "block";
+            fechaSelectDiv.style.display = "none";
+            barberoInput.value = usuarioActual.nombre;
         }
 
-
-        // Mostrar selector de fecha solo para jefes
-        if (document.getElementById("fechaSelectorDiv")) {
-            document.getElementById("fechaSelectorDiv").style.display = esJefe ? "block" : "none";
+        if (esJefe) {
+            document.getElementById("menuBarbero").style.display = "none";
+            document.getElementById("menuJefe").style.display = "grid";
+            mostrarSeccion("resumenJefe");
+        } else {
+            document.getElementById("menuBarbero").style.display = "grid";
+            document.getElementById("menuJefe").style.display = "none";
+            mostrarSeccion("registrar");
         }
-
-
         cargarServicios();
-
     }
-
-
-    /* ==============================
-       CERRAR SESIÓN
-    ============================== */
 
     function cerrarSesion() {
-
         usuarioActual = null;
         esJefe = false;
-
-        document.getElementById(
-            "app"
-        ).style.display = "none";
-
-        document.getElementById(
-            "pantallaLogin"
-        ).style.display = "block";
-
-        document.getElementById(
-            "password"
-        ).value = "";
-
-        document.getElementById(
-            "usuario"
-        ).value = "";
-
-        document.getElementById(
-            "mensajeLogin"
-        ).textContent = "";
-
+        document.getElementById("app").style.display = "none";
+        document.getElementById("pantallaLogin").style.display = "block";
+        document.getElementById("password").value = "";
+        document.getElementById("usuario").value = "";
+        document.getElementById("mensajeLogin").textContent = "";
     }
-
-
-    /* ==============================
-       SECCIONES
-    ============================== */
 
     function mostrarSeccion(id) {
-
-        document
-            .querySelectorAll(".seccion")
-            .forEach(function(seccion) {
-
-                seccion.classList.remove(
-                    "activa"
-                );
-
-            });
-
-
-        document
-            .getElementById(id)
-            .classList.add("activa");
-
-
-        if (id === "miResumen") {
-
-            cargarResumenBarbero();
-
-        }
-
-
-        if (id === "resumenJefe") {
-
-            cargarResumenJefe();
-
-        }
-
-        if (id === "pagoSemanal") {
-
-            cargarPagoSemanal();
-
-        }
-
+        document.querySelectorAll(".seccion").forEach(function(s) { s.classList.remove("activa"); });
+        document.getElementById(id).classList.add("activa");
+        if (id === "miResumen") cargarResumenBarbero();
+        if (id === "resumenJefe") cargarResumenJefe();
+        if (id === "pagoSemanal") cargarPagoSemanal();
     }
-
-
-    /* ==============================
-       VOLVER
-    ============================== */
 
     function mostrarInicio() {
-
-        if (esJefe) {
-
-            mostrarSeccion(
-                "resumenJefe"
-            );
-
-        } else {
-
-            mostrarSeccion(
-                "miResumen"
-            );
-
-        }
-
+        if (esJefe) mostrarSeccion("resumenJefe");
+        else mostrarSeccion("miResumen");
     }
-
-
-    /* ==============================
-       SERVICIOS
-    ============================== */
 
     async function cargarServicios() {
-
         try {
-
-            const respuesta =
-                await fetch("/servicios");
-
-
-            if (!respuesta.ok) {
-
-                throw new Error(
-                    "No se pudieron cargar los servicios"
-                );
-
-            }
-
-
-            servicios =
-                await respuesta.json();
-
-
-            const select =
-                document.getElementById(
-                    "servicio"
-                );
-
-
-            select.innerHTML =
-                '<option value="">Seleccionar servicio</option>';
-
-
-            servicios.forEach(
-                function(servicio) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        servicio.idServicio;
-
-
-                    option.textContent =
-                        servicio.nombre +
-                        " - " +
-                        dinero(
-                            servicio.precio
-                        );
-
-
-                    option.dataset.precio =
-                        servicio.precio;
-
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
+            const respuesta = await fetch("/servicios");
+            if (!respuesta.ok) throw new Error("No se pudieron cargar los servicios");
+            servicios = await respuesta.json();
+            const select = document.getElementById("servicio");
+            select.innerHTML = '<option value="">Seleccionar servicio</option>';
+            servicios.forEach(function(servicio) {
+                const option = document.createElement("option");
+                option.value = servicio.idServicio;
+                option.textContent = servicio.nombre + " - " + dinero(servicio.precio);
+                option.dataset.precio = servicio.precio;
+                select.appendChild(option);
+            });
+        } catch (error) { console.error(error); }
     }
-
-
-    /* ==============================
-       PRECIO
-    ============================== */
 
     function actualizarPrecio() {
-
-        const select =
-            document.getElementById(
-                "servicio"
-            );
-
-
-        const opcion =
-            select.options[
-                select.selectedIndex
-            ];
-
-
-        const precio =
-            opcion
-                ? Number(
-                    opcion.dataset.precio || 0
-                )
-                : 0;
-
-
-        document.getElementById(
-            "precio"
-        ).textContent =
-            Number(precio)
-                .toLocaleString("es-AR");
-
+        const select = document.getElementById("servicio");
+        const opcion = select.options[select.selectedIndex];
+        const precio = opcion ? Number(opcion.dataset.precio || 0) : 0;
+        document.getElementById("precio").textContent = Number(precio).toLocaleString("es-AR");
     }
-
-
-    /* ==============================
-       TRANSFERENCIA
-    ============================== */
 
     function mostrarTransferencia() {
-
-        const formaPago =
-            document.getElementById(
-                "formaPago"
-            ).value;
-
-
-        const div =
-            document.getElementById(
-                "transferenciaDiv"
-            );
-
-
-        if (
-            formaPago ===
-            "TRANSFERENCIA"
-        ) {
-
-            div.style.display =
-                "block";
-
-        } else {
-
-            div.style.display =
-                "none";
-
-
-            document.getElementById(
-                "nombreTransferencia"
-            ).value = "";
-
-        }
-
+        const formaPago = document.getElementById("formaPago").value;
+        const div = document.getElementById("transferenciaDiv");
+        div.style.display = formaPago === "TRANSFERENCIA" ? "block" : "none";
+        if (formaPago !== "TRANSFERENCIA") document.getElementById("nombreTransferencia").value = "";
     }
 
-
-    /* ==============================
-       REGISTRAR CORTE
-    ============================== */
-
     async function registrarCorte() {
+        if (!usuarioActual) { alert("No hay usuario conectado"); return; }
 
-        if (!usuarioActual) {
-
-            alert(
-                "No hay usuario conectado"
-            );
-
-            return;
-
+        let idBarberoEnviar = usuarioActual.id;
+        if (esJefe) {
+            const barberoSelect = document.getElementById("barberoSelect");
+            if (barberoSelect && barberoSelect.value) {
+                idBarberoEnviar = Number(barberoSelect.value);
+            } else {
+                alert("Seleccioná un barbero");
+                return;
+            }
         }
 
+        const idServicio = document.getElementById("servicio").value;
+        const descripcion = document.getElementById("descripcion").value.trim();
+        const formaPago = document.getElementById("formaPago").value;
+        const nombreTransferencia = document.getElementById("nombreTransferencia").value.trim();
 
-        const idServicio =
-            document.getElementById(
-                "servicio"
-            ).value;
+        if (!idServicio) { alert("Seleccioná un servicio"); return; }
+        if (!descripcion) { alert("Ingresá una descripción"); return; }
+        if (formaPago === "TRANSFERENCIA" && !nombreTransferencia) { alert("Ingresá el nombre de la transferencia"); return; }
 
-
-        const descripcion =
-            document.getElementById(
-                "descripcion"
-            ).value.trim();
-
-
-        const formaPago =
-            document.getElementById(
-                "formaPago"
-            ).value;
-
-
-        const nombreTransferencia =
-            document.getElementById(
-                "nombreTransferencia"
-            ).value.trim();
-
-
-        if (!idServicio) {
-
-            alert(
-                "Seleccioná un servicio"
-            );
-
-            return;
-
-        }
-
-
-        if (!descripcion) {
-
-            alert(
-                "Ingresá una descripción"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            formaPago ===
-                "TRANSFERENCIA"
-            &&
-            !nombreTransferencia
-        ) {
-
-            alert(
-                "Ingresá el nombre de la transferencia"
-            );
-
-            return;
-
-        }
-
-
-        // Obtener fecha si es jefe y está seleccionada
         let fechaEnviar = null;
         if (esJefe) {
             const fechaInput = document.getElementById("fechaCorte");
-            if (fechaInput && fechaInput.value) {
-                fechaEnviar = fechaInput.value;
-            }
+            if (fechaInput && fechaInput.value) fechaEnviar = fechaInput.value;
         }
 
         const datos = {
-
-            idServicio:
-                Number(idServicio),
-
-            idBarbero:
-                usuarioActual.id,
-
-            descripcion:
-                descripcion,
-
-            formaPago:
-                formaPago,
-
-            nombreTransferencia:
-                nombreTransferencia
-
+            idServicio: Number(idServicio),
+            idBarbero: idBarberoEnviar,
+            descripcion: descripcion,
+            formaPago: formaPago,
+            nombreTransferencia: nombreTransferencia
         };
 
-        // Agregar fecha si fue seleccionada
-        if (fechaEnviar) {
-            datos.fecha = fechaEnviar;
-        }
-
+        if (fechaEnviar) datos.fecha = fechaEnviar;
 
         try {
+            const respuesta = await fetch("/atenciones", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
 
-            const respuesta =
-                await fetch(
-                    "/atenciones",
-                    {
-                        method: "POST",
+            if (!respuesta.ok) throw new Error("No se pudo registrar el corte");
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify(
-                                datos
-                            )
-                    }
-                );
-
-
-            if (!respuesta.ok) {
-
-                throw new Error(
-                    "No se pudo registrar el corte"
-                );
-
+            document.getElementById("mensajeCorte").textContent = "Corte registrado correctamente";
+            document.getElementById("servicio").value = "";
+            document.getElementById("descripcion").value = "";
+            document.getElementById("formaPago").value = "EFECTIVO";
+            document.getElementById("nombreTransferencia").value = "";
+            document.getElementById("transferenciaDiv").style.display = "none";
+            document.getElementById("precio").textContent = "0";
+            if (esJefe) {
+                const fechaInput = document.getElementById("fechaCorte");
+                if (fechaInput) fechaInput.value = "";
+                const barberoSelect = document.getElementById("barberoSelect");
+                if (barberoSelect) barberoSelect.value = "";
             }
 
-
-            document.getElementById(
-                "mensajeCorte"
-            ).textContent =
-                "Corte registrado correctamente";
-
-
-            document.getElementById(
-                "servicio"
-            ).value = "";
-
-
-            document.getElementById(
-                "descripcion"
-            ).value = "";
-
-
-            document.getElementById(
-                "formaPago"
-            ).value =
-                "EFECTIVO";
-
-
-            document.getElementById(
-                "nombreTransferencia"
-            ).value = "";
-
-
-            document.getElementById(
-                "transferenciaDiv"
-            ).style.display =
-                "none";
-
-
-            document.getElementById(
-                "precio"
-            ).textContent = "0";
-
-
-            // Limpiar fecha si existe
-            const fechaInput = document.getElementById("fechaCorte");
-            if (fechaInput) fechaInput.value = "";
-
-
-            setTimeout
-                function() {
-
-                    document.getElementById(
-                        "mensajeCorte"
-                    ).textContent = "";
-
-
-                    mostrarSeccion(
-                        esJefe
-                            ? "resumenJefe"
-                            : "miResumen"
-                    );
-
-                },
-                700
-            );
-
-
+            setTimeout(function() {
+                document.getElementById("mensajeCorte").textContent = "";
+                mostrarSeccion(esJefe ? "resumenJefe" : "miResumen");
+            }, 700);
         } catch (error) {
-
             console.error(error);
-
-            alert(
-                "Error al registrar el corte"
-            );
-
+            alert("Error al registrar el corte");
         }
-
     }
-
-
-    /* ==============================
-       CARGAR ATENCIONES
-    ============================== */
 
     async function cargarAtenciones() {
-
-        const respuesta =
-            await fetch(
-                "/atenciones"
-            );
-
-
-        if (!respuesta.ok) {
-
-            throw new Error(
-                "No se pudieron cargar las atenciones"
-            );
-
-        }
-
-
-        atenciones =
-            await respuesta.json();
-
-
+        const respuesta = await fetch("/atenciones");
+        if (!respuesta.ok) throw new Error("No se pudieron cargar las atenciones");
+        atenciones = await respuesta.json();
         return atenciones;
-
     }
-
-
-    /* ==============================
-       FECHA SELECCIONADA
-    ============================== */
 
     let fechaSeleccionada = null;
-
     function obtenerFechaFiltro() {
         const selector = document.getElementById("fechaSelector");
-        if (selector && selector.value) {
-            return new Date(selector.value + "T12:00:00");
-        }
+        if (selector && selector.value) return new Date(selector.value + "T12:00:00");
         return new Date();
     }
-
     function coincideFecha(fecha) {
         if (!fecha) return false;
         const fechaCorte = new Date(fecha);
         const filtro = obtenerFechaFiltro();
-        return (
-            fechaCorte.getFullYear() === filtro.getFullYear()
-            && fechaCorte.getMonth() === filtro.getMonth()
-            && fechaCorte.getDate() === filtro.getDate()
-        );
+        return (fechaCorte.getFullYear() === filtro.getFullYear() && fechaCorte.getMonth() === filtro.getMonth() && fechaCorte.getDate() === filtro.getDate());
     }
-
-    function esDeHoy(fecha) {
-        return coincideFecha(fecha);
-    }
-
     function volverAHoy() {
         const hoy = new Date();
         const a = hoy.getFullYear();
@@ -2052,23 +505,11 @@ let vistaSemanal = false; // false = día, true = semana
         document.getElementById("fechaSelector").value = a + "-" + m + "-" + d;
         cargarResumenJefe();
     }
-
-    function cargarResumenJefeConFecha() {
-        cargarResumenJefe();
-    }
-
-
-    /* ==============================
-       MI RESUMEN
-    ============================== */
+    function cargarResumenJefeConFecha() { cargarResumenJefe(); }
 
     async function cargarResumenBarbero() {
-
         try {
-
             await cargarAtenciones();
-
-            // Obtener el porcentaje del barbero desde la API
             let porcentajeUsuario = PORCENTAJE_BARBERO;
             try {
                 const respuestaBarbero = await fetch("/barberos/" + usuarioActual.id);
@@ -2076,456 +517,91 @@ let vistaSemanal = false; // false = día, true = semana
                     const datosBarbero = await respuestaBarbero.json();
                     porcentajeUsuario = datosBarbero.porcentajeComision || (esJefe ? 1.00 : 0.40);
                 }
-            } catch (e) {
-                porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
-            }
+            } catch (e) { porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO; }
 
-
-            // Set barbero date selector to today if not set
-            const selectorBarbero = document.getElementById("fechaSelectorBarbero");
-            if (selectorBarbero && !selectorBarbero.value) {
-                const hoy = new Date();
-                const a = hoy.getFullYear();
-                const m = String(hoy.getMonth() + 1).padStart(2, '0');
-                const d = String(hoy.getDate()).padStart(2, '0');
-                selectorBarbero.value = a + "-" + m + "-" + d;
-            }
-
-            // Use barbero date selector if it has a value, otherwise use the jefe one
-            const selectorActivo = document.getElementById("fechaSelectorBarbero");
-            if (selectorActivo && selectorActivo.value) {
-                // Override the global fechaSeleccionada temporarily
-                const prevSel = fechaSeleccionada;
-                fechaSeleccionada = new Date(selectorActivo.value + "T12:00:00");
-                
-                // Update fecha display
-                const filtro = obtenerFechaFiltro();
-                const textoFecha = filtro.toLocaleDateString("es-AR", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                });
-                document.getElementById("fechaResumen").textContent = textoFecha;
-                document.querySelector("#miResumen .titulo-seccion h2").textContent = "Cortes del " + filtro.toLocaleDateString("es-AR", {day:"numeric", month:"short", year:"numeric"});
-                
-                fechaSeleccionada = prevSel;
-            }
-
-            // Override coincideFecha temporarily for barbero view
-            const prevCoincide = coincideFecha;
             const selectorB = document.getElementById("fechaSelectorBarbero");
-            
-            const misCortes =
-                atenciones.filter(
-                    function(atencion) {
+            if (selectorB && !selectorB.value) {
+                const hoy = new Date();
+                selectorB.value = hoy.getFullYear() + "-" + String(hoy.getMonth() + 1).padStart(2, '0') + "-" + String(hoy.getDate()).padStart(2, '0');
+            }
 
-                        if (!atencion.barbero || atencion.barbero.idBarbero !== usuarioActual.id) {
-                            return false;
-                        }
-                        
-                        if (!atencion.fecha) return false;
-                        const fechaCorte = new Date(atencion.fecha);
-                        
-                        let filtroFecha;
-                        if (selectorB && selectorB.value) {
-                            filtroFecha = new Date(selectorB.value + "T12:00:00");
-                        } else {
-                            filtroFecha = new Date();
-                        }
-                        
-                        return (
-                            fechaCorte.getFullYear() === filtroFecha.getFullYear()
-                            && fechaCorte.getMonth() === filtroFecha.getMonth()
-                            && fechaCorte.getDate() === filtroFecha.getDate()
-                        );
-
-                    }
-                );
-
+            const misCortes = atenciones.filter(function(atencion) {
+                if (!atencion.barbero || atencion.barbero.idBarbero !== usuarioActual.id) return false;
+                if (!atencion.fecha) return false;
+                const fechaCorte = new Date(atencion.fecha);
+                let filtroFecha = selectorB && selectorB.value ? new Date(selectorB.value + "T12:00:00") : new Date();
+                return (fechaCorte.getFullYear() === filtroFecha.getFullYear() && fechaCorte.getMonth() === filtroFecha.getMonth() && fechaCorte.getDate() === filtroFecha.getDate());
+            });
 
             let total = 0;
-
-
-            misCortes.forEach(
-                function(atencion) {
-
-                    total +=
-                        Number(
-                            atencion.precio || 0
-                        );
-
-                }
-            );
-
-
+            misCortes.forEach(function(a) { total += Number(a.precio || 0); });
             const ganancia = total * porcentajeUsuario;
-
-            // Actualizar el label según el porcentaje
             const porcentajeTexto = Math.round(porcentajeUsuario * 100);
-            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = 
-                "Mi " + porcentajeTexto + "%";
-            
-            // Actualizar el título según si es jefe o barbero
-            if (esJefe) {
-                document.getElementById("tituloMiResumen").textContent = "Mis cortes";
-            }
+            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = "Mi " + porcentajeTexto + "%";
+            if (esJefe) document.getElementById("tituloMiResumen").textContent = "Mis cortes";
 
+            document.getElementById("cantidadCortes").textContent = misCortes.length;
+            document.getElementById("totalGenerado").textContent = dinero(total);
+            document.getElementById("miGanancia").textContent = dinero(ganancia);
 
-            document.getElementById(
-                "cantidadCortes"
-            ).textContent =
-                misCortes.length;
-
-
-            document.getElementById(
-                "totalGenerado"
-            ).textContent =
-                dinero(total);
-
-
-            document.getElementById(
-                "miGanancia"
-            ).textContent =
-                dinero(ganancia);
-
-
-            const tabla =
-                document.getElementById(
-                    "tablaCortes"
-                );
-
-
+            const tabla = document.getElementById("tablaCortes");
             tabla.innerHTML = "";
-
-
-            if (
-                misCortes.length === 0
-            ) {
-
-                tabla.innerHTML = `
-                    <tr>
-                        <td
-                            colspan="7"
-                            style="text-align:center; padding:30px;"
-                        >
-                            No hay cortes registrados en esta fecha.
-                        </td>
-                    </tr>
-                `;
-
+            if (misCortes.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">No hay cortes registrados en esta fecha.</td></tr>';
                 return;
-
             }
-
-
-            misCortes
-                .sort(
-                    function(a, b) {
-
-                        return (
-                            a.idAtencion -
-                            b.idAtencion
-                        );
-
-                    }
-                )
-                .forEach(
-                    function(atencion) {
-
-                        agregarFilaCorte(
-                            tabla,
-                            atencion
-                        );
-
-                    }
-                );
-
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
+            misCortes.sort(function(a, b) { return a.idAtencion - b.idAtencion; }).forEach(function(a) { agregarFilaCorte(tabla, a); });
+        } catch (error) { console.error(error); }
     }
 
-
-    /* ==============================
-       CREAR FILA
-    ============================== */
-
-    function agregarFilaCorte(
-        tabla,
-        atencion
-    ) {
-
-        const fila =
-            document.createElement(
-                "tr"
-            );
-
-
+    function agregarFilaCorte(tabla, atencion) {
+        const fila = document.createElement("tr");
         const precio = Number(atencion.precio || 0);
-        // Usar el porcentaje del barbero desde la API
-        const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
-            ? atencion.barbero.porcentajeComision 
-            : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+        const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision ? atencion.barbero.porcentajeComision : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
         const ganancia = precio * porcentaje;
-
-
-        const servicio =
-            atencion.servicio
-                ? atencion.servicio.nombre
-                : "-";
-
-
-        const descripcion =
-            atencion.descripcion
-            || "-";
-
-
-        let pago =
-            atencion.formaPago
-            || "-";
-
-
-        if (
-            atencion.formaPago ===
-            "TRANSFERENCIA"
-        ) {
-
-            pago = `
-                <div class="pago-transferencia">
-                    TRANSFERENCIA
-                </div>
-
-                <div class="transferencia">
-                    👤 ${atencion.nombreTransferencia || "-"}
-                </div>
-            `;
-
+        const servicio = atencion.servicio ? atencion.servicio.nombre : "-";
+        const descripcion = atencion.descripcion || "-";
+        let pago = atencion.formaPago || "-";
+        if (atencion.formaPago === "TRANSFERENCIA") {
+            pago = '<div class="pago-transferencia">TRANSFERENCIA</div><div class="transferencia">👤 ' + (atencion.nombreTransferencia || "-") + '</div>';
         }
-
-
-        const puedeEliminar =
-            esJefe
-            ||
-            (
-                usuarioActual
-                &&
-                atencion.barbero
-                &&
-                atencion.barbero.idBarbero
-                    === usuarioActual.id
-            );
-
+        const puedeEliminar = esJefe || (usuarioActual && atencion.barbero && atencion.barbero.idBarbero === usuarioActual.id);
         const horaMostrar = atencion.horaLlegada || "-";
-
-
-        fila.innerHTML = `
-
-            <td>
-                ${horaMostrar}
-            </td>
-
-            <td>
-                ${servicio}
-            </td>
-
-            <td>
-                ${descripcion}
-            </td>
-
-            <td>
-                ${pago}
-            </td>
-
-            <td>
-                ${dinero(atencion.precio)}
-            </td>
-
-            <td>
-                ${dinero(ganancia)}
-            </td>
-
-            <td>
-
-                ${
-                    puedeEliminar
-
-                    ?
-
-                    `
-                    <button
-                        class="boton-eliminar"
-                        onclick="eliminarCorte(
-                            ${atencion.idAtencion}
-                        )"
-                    >
-                        ELIMINAR
-                    </button>
-                    `
-
-                    :
-
-                    "-"
-                }
-
-            </td>
-
-        `;
-
-
-        tabla.appendChild(
-            fila
-        );
-
+        fila.innerHTML = '<td>' + horaMostrar + '</td><td>' + servicio + '</td><td>' + descripcion + '</td><td>' + pago + '</td><td>' + dinero(atencion.precio) + '</td><td>' + dinero(ganancia) + '</td><td>' + (puedeEliminar ? '<button class="boton-eliminar" onclick="eliminarCorte(' + atencion.idAtencion + ')">ELIMINAR</button>' : '-') + '</td>';
+        tabla.appendChild(fila);
     }
-
-
-    /* ==============================
-       ELIMINAR CORTE
-    ============================== */
 
     async function eliminarCorte(id) {
-
-        const corte =
-            atenciones.find(
-                function(atencion) {
-
-                    return (
-                        atencion.idAtencion
-                        === id
-                    );
-
-                }
-            );
-
-
-        if (!corte) {
-
-            alert(
-                "No se encontró el corte"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !esJefe
-            &&
-            (
-                !usuarioActual
-                ||
-                !corte.barbero
-                ||
-                corte.barbero.idBarbero
-                    !== usuarioActual.id
-            )
-        ) {
-
-            alert(
-                "No podés eliminar este corte"
-            );
-
-            return;
-
-        }
-
-
-        const confirmar =
-            confirm(
-                "¿Seguro que querés eliminar este corte?\n\n"
-                +
-                (
-                    corte.servicio
-                        ? corte.servicio.nombre
-                        : "Corte"
-                )
-                +
-                "\n"
-                +
-                dinero(
-                    corte.precio
-                )
-            );
-
-
-        if (!confirmar) {
-            return;
-        }
-
-
+        const corte = atenciones.find(function(a) { return a.idAtencion === id; });
+        if (!corte) { alert("No se encontró el corte"); return; }
+        if (!esJefe && (!usuarioActual || !corte.barbero || corte.barbero.idBarbero !== usuarioActual.id)) { alert("No podés eliminar este corte"); return; }
+        const confirmar = confirm("¿Seguro que querés eliminar este corte?\n\n" + (corte.servicio ? corte.servicio.nombre : "Corte") + "\n" + dinero(corte.precio));
+        if (!confirmar) return;
         try {
-
-            const respuesta =
-                await fetch(
-                    "/atenciones/" + id,
-                    {
-                        method: "DELETE"
-                    }
-                );
-
-
-            if (!respuesta.ok) {
-
-                throw new Error(
-                    "No se pudo eliminar"
-                );
-
-            }
-
-
-            alert(
-                "Corte eliminado correctamente"
-            );
-
-
-            if (esJefe) {
-
-                cargarResumenJefe();
-
-            } else {
-
-                cargarResumenBarbero();
-
-            }
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "No se pudo eliminar el corte"
-            );
-
-        }
-
+            const respuesta = await fetch("/atenciones/" + id, { method: "DELETE" });
+            if (!respuesta.ok) throw new Error("No se pudo eliminar");
+            alert("Corte eliminado correctamente");
+            if (esJefe) cargarResumenJefe(); else cargarResumenBarbero();
+        } catch (error) { console.error(error); alert("No se pudo eliminar el corte"); }
     }
-
-
-    /* ==============================
-       RESUMEN JEFE
-    ============================== */
-
 
     function cambiarVista(modo) {
         vistaSemanal = (modo === 'semana');
         const btnDia = document.getElementById('btnDia');
         const btnSemana = document.getElementById('btnSemana');
+        const fechaContainer = document.getElementById('fechaSelectorContainer');
         
         if (vistaSemanal) {
             btnDia.style.background = 'var(--gris-boton)';
             btnSemana.style.background = '#25c76f';
+            // Ocultar selector de fecha en modo semanal
+            if (fechaContainer) fechaContainer.style.display = 'none';
         } else {
             btnDia.style.background = '#25c76f';
             btnSemana.style.background = 'var(--gris-boton)';
+            // Mostrar selector de fecha en modo diario
+            if (fechaContainer) fechaContainer.style.display = 'block';
         }
-        
         cargarResumenJefe();
     }
 
@@ -2539,544 +615,159 @@ let vistaSemanal = false; // false = día, true = semana
         const finSemana = new Date(inicioSemana);
         finSemana.setDate(inicioSemana.getDate() + 6);
         finSemana.setHours(23, 59, 59, 999);
-        
         return fechaCorte >= inicioSemana && fechaCorte <= finSemana;
     }
 
     async function cargarResumenJefe() {
-
         try {
-
-            // Set date selector to today if not set
             const selector = document.getElementById("fechaSelector");
             if (selector && !selector.value) {
                 const hoy = new Date();
-                const a = hoy.getFullYear();
-                const m = String(hoy.getMonth() + 1).padStart(2, '0');
-                const d = String(hoy.getDate()).padStart(2, '0');
-                selector.value = a + "-" + m + "-" + d;
+                selector.value = hoy.getFullYear() + "-" + String(hoy.getMonth() + 1).padStart(2, '0') + "-" + String(hoy.getDate()).padStart(2, '0');
             }
-
             await cargarAtenciones();
-
-            // Cargar todos los barberos desde la API
             const respuestaBarberos = await fetch("/barberos");
             const barberosData = await respuestaBarberos.json();
             const barberosMap = {};
-            barberosData.forEach(b => {
-                barberosMap[b.idBarbero] = b;
+            barberosData.forEach(b => { barberosMap[b.idBarbero] = b; });
+
+            const cortesHoy = atenciones.filter(function(a) {
+                if (vistaSemanal) return esDeEstaSemana(a.fecha);
+                else return coincideFecha(a.fecha);
             });
 
-
-            const cortesHoy =
-                atenciones.filter(
-                    function(atencion) {
-
-                        if (vistaSemanal) {
-                            return esDeEstaSemana(atencion.fecha);
-                        } else {
-                            return coincideFecha(atencion.fecha);
-                        }
-
-                    }
-                );
-
-            // Update title and date display
             const tituloEl = document.getElementById('tituloResumen');
-            if (tituloEl) {
-                tituloEl.textContent = vistaSemanal ? 'Resumen semanal' : 'Resumen del día';
-            }
-            
+            if (tituloEl) tituloEl.textContent = vistaSemanal ? 'Resumen semanal' : 'Resumen del día';
+
             const filtro = obtenerFechaFiltro();
-            const textoFecha = filtro.toLocaleDateString("es-AR", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-            });
+            const textoFecha = filtro.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
             document.getElementById("fechaJefe").textContent = textoFecha;
 
-            let facturacion = 0;
-            let totalComisiones = 0;
-            let gananciaBarberia = 0;
-            let totalEfectivo = 0;
-            let totalTransferencia = 0;
-            let comisionesBarberos = 0;
-            let gananciaJefes = 0;
+            let facturacion = 0, totalEfectivo = 0, totalTransferencia = 0, comisionesBarberos = 0, gananciaJefes = 0;
 
+            cortesHoy.forEach(function(a) {
+                const precio = Number(a.precio || 0);
+                facturacion += precio;
+                const porcentaje = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : (a.barbero && a.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+                const comision = precio * porcentaje;
+                if (a.barbero && a.barbero.esJefe === true) gananciaJefes += comision;
+                else comisionesBarberos += comision;
+                if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
+                else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
+            });
 
-            cortesHoy.forEach(
-                function(atencion) {
+            document.getElementById("totalCortesJefe").textContent = cortesHoy.length;
+            document.getElementById("facturacionJefe").textContent = dinero(facturacion);
+            document.getElementById("totalEfectivo").textContent = dinero(totalEfectivo);
+            document.getElementById("totalTransferencia").textContent = dinero(totalTransferencia);
+            document.getElementById("gananciaBarberosJefe").textContent = dinero(comisionesBarberos);
+            document.getElementById("gananciaJefes").textContent = dinero(gananciaJefes);
 
-                    const precio = Number(atencion.precio || 0);
-                    facturacion += precio;
-
-                    const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision 
-                        ? atencion.barbero.porcentajeComision 
-                        : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
-
-                    const comision = precio * porcentaje;
-                    totalComisiones += comision;
-                    
-                    // Separar comisiones de barberos y jefes
-                    if (atencion.barbero && atencion.barbero.esJefe === true) {
-                        gananciaJefes += comision;
-                    } else {
-                        comisionesBarberos += comision;
-                    }
-                    
-                    // Lo que queda para la barbería
-                    gananciaBarberia += (precio - comision);
-
-                    // Desglose por forma de pago
-                    if (atencion.formaPago === "EFECTIVO") {
-                        totalEfectivo += precio;
-                    } else if (atencion.formaPago === "TRANSFERENCIA") {
-                        totalTransferencia += precio;
-                    }
-
-                }
-            );
-
-
-            document.getElementById(
-                "totalCortesJefe"
-            ).textContent =
-                cortesHoy.length;
-
-
-            document.getElementById(
-                "facturacionJefe"
-            ).textContent =
-                dinero(
-                    facturacion
-                );
-
-
-            document.getElementById(
-                "totalEfectivo"
-            ).textContent =
-                dinero(
-                    totalEfectivo
-                );
-
-
-            document.getElementById(
-                "totalTransferencia"
-            ).textContent =
-                dinero(
-                    totalTransferencia
-                );
-
-
-            document.getElementById(
-                "gananciaBarberosJefe"
-            ).textContent =
-                dinero(comisionesBarberos);
-
-
-            document.getElementById(
-                "gananciaJefes"
-            ).textContent =
-                dinero(gananciaJefes);
-
-
-            const lista =
-                document.getElementById(
-                    "listaBarberos"
-                );
-
-
+            const lista = document.getElementById("listaBarberos");
             lista.innerHTML = "";
 
+            Object.keys(barberosMap).forEach(function(id) {
+                const barbero = barberosMap[id];
+                if (!barbero.activo) return;
+                const porcentajeBarbero = barbero.porcentajeComision || 0.40;
+                const esJefeBarbero = barbero.esJefe === true;
+                const icono = esJefeBarbero ? "👑" : "✂";
+                const cortes = cortesHoy.filter(function(a) { return (a.barbero && String(a.barbero.idBarbero) === String(id)); });
+                let total = 0;
+                cortes.forEach(function(a) { total += Number(a.precio || 0); });
+                const ganancia = total * porcentajeBarbero;
+                const porcentajeTexto = Math.round(porcentajeBarbero * 100);
+                const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
 
-            Object.keys(
-                barberosMap
-            ).forEach(
-                function(id) {
-
-                    const barbero = barberosMap[id];
-                    if (!barbero.activo) return;
-
-                    const porcentajeBarbero = barbero.porcentajeComision || 0.40;
-                    const esJefeBarbero = barbero.esJefe === true;
-                    const icono = esJefeBarbero ? "👑" : "✂";
-
-                    const cortes =
-                        cortesHoy.filter(
-                            function(atencion) {
-
-                                return (
-                                    atencion.barbero
-                                    &&
-                                    String(
-                                        atencion.barbero
-                                            .idBarbero
-                                    )
-                                    ===
-                                    String(id)
-                                );
-
-                            }
-                        );
-
-
-                    let total = 0;
-
-
-                    cortes.forEach(
-                        function(atencion) {
-
-                            total +=
-                                Number(
-                                    atencion.precio
-                                    || 0
-                                );
-
-                        }
-                    );
-
-
-                    const ganancia =
-                        total * porcentajeBarbero;
-
-                    const porcentajeTexto = Math.round(porcentajeBarbero * 100);
-                    const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
-
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "barbero-card";
-
-
-                    card.innerHTML = `
-
-                        <div class="barbero-header">
-
-                            <div>
-
-                                <h3>
-                                    ${icono} ${barbero.nombre}
-                                </h3>
-
-                                <div class="barbero-info">
-
-                                    ${cortes.length}
-                                    corte(s)
-                                    ·
-                                    Facturación:
-                                    ${dinero(total)}
-                                    ·
-                                    ${etiquetaComision} (${porcentajeTexto}%):
-                                    ${dinero(ganancia)}
-
-                                </div>
-
-                            </div>
-
-
-                            <button
-                                class="boton-detalle"
-                                onclick="verDetalleBarbero(
-                                    ${id},
-                                    '${barbero.nombre}'
-                                )"
-                            >
-                                VER DETALLE
-                            </button>
-
-                        </div>
-
-                    `;
-
-
-                    lista.appendChild(
-                        card
-                    );
-
-                }
-            );
-
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
+                const card = document.createElement("div");
+                card.className = "barbero-card";
+                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia) + '</div></div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
+                lista.appendChild(card);
+            });
+        } catch (error) { console.error(error); }
     }
 
-
-    /* ==============================
-       DETALLE BARBERO
-    ============================== */
-
-    function verDetalleBarbero(
-        idBarbero,
-        nombre
-    ) {
-
-        const cortes =
-            atenciones.filter(
-                function(atencion) {
-
-                    return (
-                        coincideFecha(
-                            atencion.fecha
-                        )
-                        &&
-                        atencion.barbero
-                        &&
-                        atencion.barbero.idBarbero
-                            === idBarbero
-                    );
-
-                }
-            );
-
-
-        document.getElementById(
-            "listaBarberos"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "detalleJefe"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "tituloDetalle"
-        ).textContent =
-            "Cortes de " +
-            nombre;
-
-
-        const tabla =
-            document.getElementById(
-                "tablaDetalleJefe"
-            );
-
-
+    function verDetalleBarbero(idBarbero, nombre) {
+        const cortes = atenciones.filter(function(a) {
+            if (!a.barbero || a.barbero.idBarbero !== idBarbero) return false;
+            if (vistaSemanal) return esDeEstaSemana(a.fecha);
+            return coincideFecha(a.fecha);
+        });
+        document.getElementById("listaBarberos").style.display = "none";
+        document.getElementById("detalleJefe").style.display = "block";
+        document.getElementById("tituloDetalle").textContent = "Cortes de " + nombre + (vistaSemanal ? " (semana)" : "");
+        const tabla = document.getElementById("tablaDetalleJefe");
         tabla.innerHTML = "";
-
-
-        if (
-            cortes.length === 0
-        ) {
-
-            tabla.innerHTML = `
-
-                <tr>
-
-                    <td
-                        colspan="7"
-                        style="text-align:center; padding:30px;"
-                    >
-                        Este barbero no tiene cortes en esta fecha.
-                    </td>
-
-                </tr>
-
-            `;
-
+        if (cortes.length === 0) {
+            tabla.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Este barbero no tiene cortes' + (vistaSemanal ? ' esta semana' : ' en esta fecha') + '.</td></tr>';
             return;
-
         }
-
-
-        cortes.forEach(
-            function(atencion) {
-
-                agregarFilaCorte(
-                    tabla,
-                    atencion
-                );
-
-            }
-        );
-
+        cortes.forEach(function(a) { agregarFilaCorte(tabla, a); });
     }
-
-
-    /* ==============================
-       CERRAR DETALLE
-    ============================== */
 
     function cerrarDetalleJefe() {
-
-        document.getElementById(
-            "detalleJefe"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "listaBarberos"
-        ).style.display =
-            "block";
-
-
+        document.getElementById("detalleJefe").style.display = "none";
+        document.getElementById("listaBarberos").style.display = "block";
         cargarResumenJefe();
-
     }
-
-
-    /* ==============================
-       VOLVER A HOY BARBERO
-    ============================== */
-
-    function volverAHoyBarbero() {
-        const hoy = new Date();
-        const a = hoy.getFullYear();
-        const m = String(hoy.getMonth() + 1).padStart(2, '0');
-        const d = String(hoy.getDate()).padStart(2, '0');
-        document.getElementById("fechaSelectorBarbero").value = a + "-" + m + "-" + d;
-        // Temporarily override fechaSeleccionada for barbero view
-        fechaSeleccionada = null;
-        cargarResumenBarbero();
-    }
-
-    function cargarResumenBarberoConFecha() {
-        cargarResumenBarbero();
-    }
-
-    /* ==============================
-       EXPORTAR A EXCEL
-    ============================== */
 
     function exportarExcel() {
-
         const filtro = obtenerFechaFiltro();
-        const fechaTexto = filtro.toLocaleDateString("es-AR", {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        
+        const fechaTexto = filtro.toLocaleDateString("es-AR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const fechaArchivo = filtro.toISOString().split('T')[0];
 
         fetch("/barberos").then(r => r.json()).then(barberosData => {
             fetch("/atenciones").then(r => r.json()).then(atencionesData => {
+                const cortesDia = atencionesData.filter(function(a) { return coincideFecha(a.fecha); });
+                cortesDia.sort(function(a, b) { return (a.horaLlegada || "00:00").localeCompare(b.horaLlegada || "00:00"); });
 
-                const cortesDia = atencionesData.filter(function(a) {
-                    return coincideFecha(a.fecha);
-                });
-
-                cortesDia.sort(function(a, b) {
-                    var horaA = a.horaLlegada || "00:00";
-                    var horaB = b.horaLlegada || "00:00";
-                    return horaA.localeCompare(horaB);
-                });
-
-                let totalFacturado = 0;
-                let totalComisiones = 0;
-                let totalEfectivo = 0;
-                let totalTransferencia = 0;
-
+                let totalFacturado = 0, totalComisiones = 0, totalEfectivo = 0, totalTransferencia = 0;
                 cortesDia.forEach(function(a) {
                     var precio = Number(a.precio || 0);
                     totalFacturado += precio;
-                    var pct = a.barbero && a.barbero.porcentajeComision
-                        ? a.barbero.porcentajeComision
-                        : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
+                    var pct = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
                     totalComisiones += (precio * pct);
                     if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
                     else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
                 });
 
                 let totalBarberia = totalFacturado - totalComisiones;
-
-                // Generar CSV compatible con cualquier celular
                 let csv = '';
                 const nombreExport = document.getElementById("nombreApp").textContent || "BARBER SHOP";
-                csv += nombreExport + '\n';
-                csv += 'Reporte de Cortes\n';
-                csv += 'Fecha:,' + fechaTexto + '\n';
-                csv += 'Generado:,' + new Date().toLocaleString("es-AR") + '\n\n';
-                
-                csv += 'RESUMEN GENERAL\n';
-                csv += 'Total de Cortes:,' + cortesDia.length + '\n';
-                csv += 'Total Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\n';
-                csv += 'Comisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\n';
-                csv += 'Ganancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
-                
-                csv += 'FORMAS DE PAGO\n';
-                csv += 'Efectivo:,"$' + totalEfectivo.toLocaleString("es-AR") + '"\n';
-                csv += 'Transferencia:,"$' + totalTransferencia.toLocaleString("es-AR") + '"\n\n';
-                
-                csv += 'DETALLE DE CORTES\n';
-                csv += 'Hora,Barbero,Servicio,Pago,Precio,%,Comisión\n';
-                
+                csv += nombreExport + '\nReporte de Cortes\nFecha:,' + fechaTexto + '\nGenerado:,' + new Date().toLocaleString("es-AR") + '\n\n';
+                csv += 'RESUMEN GENERAL\nTotal de Cortes:,' + cortesDia.length + '\nTotal Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\nComisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\nGanancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
+                csv += 'FORMAS DE PAGO\nEfectivo:,"$' + totalEfectivo.toLocaleString("es-AR") + '"\nTransferencia:,"$' + totalTransferencia.toLocaleString("es-AR") + '"\n\n';
+                csv += 'DETALLE DE CORTES\nHora,Barbero,Servicio,Pago,Precio,%,Comisión\n';
+
                 cortesDia.forEach(function(a) {
                     const barbero = a.barbero ? a.barbero.nombre : "-";
                     const servicio = a.servicio ? a.servicio.nombre : "-";
                     const precio = Number(a.precio || 0);
-                    const pct = a.barbero && a.barbero.porcentajeComision
-                        ? a.barbero.porcentajeComision : 0.40;
+                    const pct = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : 0.40;
                     const comision = precio * pct;
                     const hora = a.horaLlegada || "-";
                     const esJefe = a.barbero && a.barbero.esJefe;
-                    const nombreBarbero = (esJefe ? 'Jefe ' : '') + barbero;
-
-                    csv += hora + ',';
-                    csv += nombreBarbero + ',';
-                    csv += servicio + ',';
-                    csv += (a.formaPago || "-") + ',';
-                    csv += '"$' + precio.toLocaleString("es-AR") + '",';
-                    csv += Math.round(pct * 100) + '%,';
-                    csv += '"$' + comision.toLocaleString("es-AR") + '"\n';
+                    csv += hora + ',' + (esJefe ? 'Jefe ' : '') + barbero + ',' + servicio + ',' + (a.formaPago || "-") + ',"$' + precio.toLocaleString("es-AR") + '",' + Math.round(pct * 100) + '%,"$' + comision.toLocaleString("es-AR") + '"\n';
                 });
-                
-                csv += '\n';
-                
-                // Resumen por barbero
-                csv += 'RESUMEN POR BARBERO\n';
-                csv += 'Barbero,Rol,Cortes,Facturado,%,Ganancia\n';
-                
+
+                csv += '\nRESUMEN POR BARBERO\nBarbero,Rol,Cortes,Facturado,%,Ganancia\n';
                 const totals = {};
                 cortesDia.forEach(function(a) {
                     const id = a.barbero ? a.barbero.idBarbero : 0;
-                    if (!totals[id]) {
-                        totals[id] = {
-                            nombre: a.barbero ? a.barbero.nombre : "?",
-                            esJefe: a.barbero ? a.barbero.esJefe : false,
-                            porcentaje: a.barbero && a.barbero.porcentajeComision
-                                ? a.barbero.porcentajeComision : 0.40,
-                            cortes: 0, total: 0, comision: 0
-                        };
-                    }
+                    if (!totals[id]) { totals[id] = { nombre: a.barbero ? a.barbero.nombre : "?", esJefe: a.barbero ? a.barbero.esJefe : false, porcentaje: a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : 0.40, cortes: 0, total: 0, comision: 0 }; }
                     totals[id].cortes++;
                     const precio = Number(a.precio || 0);
                     totals[id].total += precio;
                     totals[id].comision += precio * totals[id].porcentaje;
                 });
-                
-                Object.keys(totals).sort(function(a, b) {
-                    return totals[a].nombre.localeCompare(totals[b].nombre);
-                }).forEach(function(id) {
+
+                Object.keys(totals).sort(function(a, b) { return totals[a].nombre.localeCompare(totals[b].nombre); }).forEach(function(id) {
                     const t = totals[id];
                     const rol = t.esJefe ? "Jefe" : "Barbero";
-                    csv += t.nombre + ',';
-                    csv += rol + ',';
-                    csv += t.cortes + ',';
-                    csv += '"$' + t.total.toLocaleString("es-AR") + '",';
-                    csv += Math.round(t.porcentaje * 100) + '%,';
-                    csv += '"$' + t.comision.toLocaleString("es-AR") + '"\n';
+                    csv += t.nombre + ',' + rol + ',' + t.cortes + ',"$' + t.total.toLocaleString("es-AR") + '",' + Math.round(t.porcentaje * 100) + '%,"$' + t.comision.toLocaleString("es-AR") + '"\n';
                 });
 
-                // Descargar como CSV (compatible con cualquier celular)
-                const blob = new Blob(['\uFEFF' + csv], {
-                    type: 'text/csv;charset=utf-8;'
-                });
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
                 link.href = url;
@@ -3087,28 +778,15 @@ let vistaSemanal = false; // false = día, true = semana
         });
     }
 
-
-
-
-
-    /* ==============================
-       PAGO SEMANAL
-    ============================== */
-
     function obtenerSemanaActual() {
         const hoy = new Date();
-        const diaSemana = hoy.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
-        
-        // Calcular lunes de esta semana
+        const diaSemana = hoy.getDay();
         const lunes = new Date(hoy);
         lunes.setDate(hoy.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
         lunes.setHours(0, 0, 0, 0);
-        
-        // Calcular domingo de esta semana
         const domingo = new Date(lunes);
         domingo.setDate(lunes.getDate() + 6);
         domingo.setHours(23, 59, 59, 999);
-        
         return { lunes, domingo };
     }
 
@@ -3122,107 +800,55 @@ let vistaSemanal = false; // false = día, true = semana
     async function cargarPagoSemanal() {
         try {
             await cargarAtenciones();
-            
-            // Encontrar a Luciano
             const luciano = barberosLista.find(b => b.nombre.toLowerCase() === 'luciano');
-            if (!luciano) {
-                alert('No se encontró al barbero Luciano');
-                return;
-            }
-            
-            // Filtrar cortes de Luciano de esta semana
+            if (!luciano) { alert('No se encontró al barbero Luciano'); return; }
             const { lunes, domingo } = obtenerSemanaActual();
-            const cortesLuciano = atenciones.filter(a => 
-                a.barbero && 
-                a.barbero.idBarbero === luciano.idBarbero &&
-                esDeEstaSemana(a.fecha)
-            );
-            
-            // Calcular totales
+            const cortesLuciano = atenciones.filter(a => a.barbero && a.barbero.idBarbero === luciano.idBarbero && esDeEstaSemana(a.fecha));
             let totalFacturado = 0;
-            cortesLuciano.forEach(a => {
-                totalFacturado += Number(a.precio || 0);
-            });
-            
-            const pagoLuciano = totalFacturado * 0.50; // 50%
-            
-            // Mostrar datos
+            cortesLuciano.forEach(a => { totalFacturado += Number(a.precio || 0); });
+            const pagoLuciano = totalFacturado * 0.50;
+
             document.getElementById('cortesSemana').textContent = cortesLuciano.length;
             document.getElementById('facturadoSemana').textContent = dinero(totalFacturado);
             document.getElementById('pagoLuciano').textContent = dinero(pagoLuciano);
-            
-            // Mostrar rango de la semana
+
             const opciones = { day: 'numeric', month: 'long' };
-            const textoSemana = `Semana: ${lunes.toLocaleDateString('es-AR', opciones)} - ${domingo.toLocaleDateString('es-AR', opciones)}`;
-            document.getElementById('fechaPago').textContent = textoSemana;
-            
-            // Verificar si ya se pagó
-            const semanaKey = `pago_semanal_${lunes.toISOString().split('T')[0]}`;
+            document.getElementById('fechaPago').textContent = 'Semana: ' + lunes.toLocaleDateString('es-AR', opciones) + ' - ' + domingo.toLocaleDateString('es-AR', opciones);
+
+            const semanaKey = 'pago_semanal_' + lunes.toISOString().split('T')[0];
             const yaPagado = localStorage.getItem(semanaKey) === 'true';
-            
             const estadoDiv = document.getElementById('estadoPago');
             const btnPagado = document.getElementById('btnMarcarPagado');
-            
+
             if (yaPagado) {
                 estadoDiv.innerHTML = '<div style="background: var(--verde-suave); color: var(--verde); padding: 20px; border-radius: 10px; font-size: 18px; font-weight: 600; border: 2px solid var(--verde);">✅ PAGO REALIZADO</div>';
                 btnPagado.style.display = 'none';
             } else {
-                estadoDiv.innerHTML = '<div style="background: var(--naranja-suave); color: var(--naranja); padding: 20px; border-radius: 10px; font-size: 18px; font-weight: 600; border: 2px solid var(--naranja);"> PENDIENTE DE PAGO</div>';
+                estadoDiv.innerHTML = '<div style="background: var(--naranja-suave); color: var(--naranja); padding: 20px; border-radius: 10px; font-size: 18px; font-weight: 600; border: 2px solid var(--naranja);">⏳ PENDIENTE DE PAGO</div>';
                 btnPagado.style.display = 'inline-block';
             }
-            
-            // Mostrar detalle
+
             const tabla = document.getElementById('tablaPagoSemanal');
             tabla.innerHTML = '';
-            
-            if (cortesLuciano.length === 0) {
-                tabla.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No hay cortes de Luciano esta semana</td></tr>';
-                return;
-            }
-            
-            // Ordenar por fecha
+            if (cortesLuciano.length === 0) { tabla.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No hay cortes de Luciano esta semana</td></tr>'; return; }
+
             cortesLuciano.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-            
             cortesLuciano.forEach(a => {
-                const fecha = new Date(a.fecha).toLocaleDateString('es-AR');
-                const hora = a.horaLlegada || '-';
-                const servicio = a.servicio ? a.servicio.nombre : '-';
-                const precio = Number(a.precio || 0);
-                const comision = precio * 0.50;
-                
                 const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${fecha}</td>
-                    <td>${hora}</td>
-                    <td>${servicio}</td>
-                    <td>${dinero(precio)}</td>
-                    <td style="color: var(--naranja); font-weight: 600;">${dinero(comision)}</td>
-                `;
+                fila.innerHTML = '<td>' + new Date(a.fecha).toLocaleDateString('es-AR') + '</td><td>' + (a.horaLlegada || '-') + '</td><td>' + (a.servicio ? a.servicio.nombre : '-') + '</td><td>' + dinero(Number(a.precio || 0)) + '</td><td style="color: var(--naranja); font-weight: 600;">' + dinero(Number(a.precio || 0) * 0.50) + '</td>';
                 tabla.appendChild(fila);
             });
-            
-        } catch (error) {
-            console.error('Error al cargar pago semanal:', error);
-        }
+        } catch (error) { console.error('Error al cargar pago semanal:', error); }
     }
 
     function marcarPagoSemanal() {
-        if (!confirm('¿Confirmar que realizaste el pago a Luciano?')) {
-            return;
-        }
-        
+        if (!confirm('¿Confirmar que realizaste el pago a Luciano?')) return;
         const { lunes } = obtenerSemanaActual();
-        const semanaKey = `pago_semanal_${lunes.toISOString().split('T')[0]}`;
-        
-        localStorage.setItem(semanaKey, 'true');
-        
+        localStorage.setItem('pago_semanal_' + lunes.toISOString().split('T')[0], 'true');
         alert('✅ Pago marcado como realizado');
-        
-        // Recargar la vista
         cargarPagoSemanal();
     }
 
-    // Cargar nombre y barberos al iniciar
     async function iniciarApp() {
         try {
             const configResp = await fetch("/config");
@@ -3233,24 +859,14 @@ let vistaSemanal = false; // false = día, true = semana
                 document.getElementById("tituloApp").innerHTML = "✂ " + nombre;
                 document.title = nombre;
             }
-        } catch(e) {
-            console.log("No se pudo cargar config");
-        }
+        } catch(e) { console.log("No se pudo cargar config"); }
 
         try {
             const barberosResp = await fetch("/barberos");
             if (barberosResp.ok) {
                 const data = await barberosResp.json();
-                // Mapear idBarbero como id para compatibilidad con el resto del código
                 barberosLista = data.map(function(b) {
-                    return {
-                        id: b.idBarbero,
-                        idBarbero: b.idBarbero,
-                        nombre: b.nombre,
-                        activo: b.activo,
-                        esJefe: b.esJefe,
-                        porcentajeComision: b.porcentajeComision
-                    };
+                    return { id: b.idBarbero, idBarbero: b.idBarbero, nombre: b.nombre, activo: b.activo, esJefe: b.esJefe, porcentajeComision: b.porcentajeComision };
                 });
                 const select = document.getElementById("usuario");
                 barberosLista.forEach(function(b) {
@@ -3262,18 +878,12 @@ let vistaSemanal = false; // false = día, true = semana
                     }
                 });
             }
-        } catch(e) {
-            console.log("No se pudieron cargar los barberos");
-        }
-
+        } catch(e) { console.log("No se pudieron cargar los barberos"); }
         mostrarFecha();
     }
 
     iniciarApp();
-
 </script>
-
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fcd12afa49eedb',t:'MTc4NzUxNjQxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 
 </html>
-
