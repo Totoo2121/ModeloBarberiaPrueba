@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <title>Barber Shop</title>
-
     <style>
         * { box-sizing: border-box; }
         :root {
@@ -150,43 +148,33 @@
         <section id="registrar" class="seccion">
             <div class="titulo-seccion"><h2>Registrar corte</h2></div>
             <div class="formulario">
-                <!-- Selector de barbero para jefes -->
+                <label id="labelBarberoCorte">Barbero</label>
+                <input type="text" id="barberoCorte" readonly>
                 <div id="barberoSelectorDiv">
                     <label for="barberoSelect">Asignar a barbero</label>
                     <select id="barberoSelect"><option value="">Seleccionar barbero</option></select>
                 </div>
-                <!-- Campo de texto para barberos -->
-                <label id="labelBarbero">Barbero</label>
-                <input type="text" id="barberoCorte" readonly>
-
-                <!-- Selector de fecha para jefes -->
                 <div id="fechaSelectorDiv">
                     <label for="fechaCorte">📅 Fecha del corte</label>
                     <input type="date" id="fechaCorte">
                 </div>
-
                 <label for="servicio">Servicio</label>
                 <select id="servicio" onchange="actualizarPrecio()"><option value="">Seleccionar servicio</option></select>
-
                 <label for="descripcion">Descripción del corte</label>
                 <textarea id="descripcion" placeholder="Ej: Degradé bajo, máquina 1 a los costados..."></textarea>
-
                 <label for="formaPago">Forma de pago</label>
                 <select id="formaPago" onchange="mostrarTransferencia()">
                     <option value="EFECTIVO">Efectivo</option>
                     <option value="TRANSFERENCIA">Transferencia</option>
                 </select>
-
                 <div id="transferenciaDiv">
                     <label>Nombre de la transferencia</label>
                     <input type="text" id="nombreTransferencia" placeholder="Ej: Juan Pérez">
                 </div>
-
                 <div class="precio">
                     <span class="precio-label">Total</span>
                     <span class="precio-valor">$<span id="precio">0</span></span>
                 </div>
-
                 <button onclick="registrarCorte()">REGISTRAR CORTE</button>
                 <button class="boton-secundario" onclick="mostrarInicio()">VOLVER</button>
                 <div id="mensajeCorte" class="mensaje"></div>
@@ -222,16 +210,20 @@
                 <h2 id="tituloResumen">Resumen del día</h2>
                 <div class="fecha" id="fechaJefe"></div>
             </div>
-            <div style="text-align:center; margin-bottom:25px;">
+            <div id="fechaSelectorContainer" style="text-align:center; margin-bottom:25px;">
                 <label style="display:inline-block; margin-right:10px;">Ver fecha:</label>
                 <input type="date" id="fechaSelector" style="width:auto; display:inline-block; padding:10px 15px;" onchange="cargarResumenJefeConFecha()">
                 <button onclick="volverAHoy()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
+            </div>
+            <div id="semanaSelectorContainer" style="text-align:center; margin-bottom:25px; display:none;">
+                <label style="display:inline-block; margin-right:10px;">Ver semana:</label>
+                <select id="semanaSelector" style="width:auto; display:inline-block; padding:10px 15px; background:var(--fondo-input); color:white; border:1px solid var(--borde); border-radius:9px; font-size:15px;" onchange="cambiarSemanaSeleccionada()"></select>
             </div>
             <div class="resumen">
                 <div class="tarjeta"><h3>Cortes</h3><div class="numero" id="totalCortesJefe">0</div></div>
                 <div class="tarjeta"><h3>Facturación</h3><div class="numero" id="facturacionJefe">$0</div></div>
                 <div class="tarjeta"><h3>💵 Efectivo</h3><div class="numero" id="totalEfectivo" style="color: var(--verde);">$0</div></div>
-                <div class="tarjeta"><h3> Transferencia</h3><div class="numero" id="totalTransferencia" style="color: var(--azul);">$0</div></div>
+                <div class="tarjeta"><h3>📱 Transferencia</h3><div class="numero" id="totalTransferencia" style="color: var(--azul);">$0</div></div>
                 <div class="tarjeta"><h3>Comis. Barberos</h3><div class="numero" id="gananciaBarberosJefe" style="color: var(--naranja);">$0</div></div>
                 <div class="tarjeta"><h3>Ganancia Jefes</h3><div class="numero" id="gananciaJefes" style="color: var(--violeta);">$0</div></div>
             </div>
@@ -284,6 +276,7 @@
     let servicios = [];
     let barberosLista = [];
     let vistaSemanal = false;
+    let semanaSeleccionada = null;
     const PORCENTAJE_BARBERO = 0.50;
     const PORCENTAJE_JEFE = 1.00;
 
@@ -325,17 +318,15 @@
         // Mostrar/ocultar selectores según si es jefe
         const barberoSelectDiv = document.getElementById("barberoSelectorDiv");
         const barberoInput = document.getElementById("barberoCorte");
-        const labelBarbero = document.getElementById("labelBarbero");
+        const labelBarbero = document.getElementById("labelBarberoCorte");
         const fechaSelectDiv = document.getElementById("fechaSelectorDiv");
 
         if (esJefe) {
-            // Jefe: muestra select de barbero y select de fecha
             barberoSelectDiv.style.display = "block";
             barberoInput.style.display = "none";
             labelBarbero.style.display = "none";
             fechaSelectDiv.style.display = "block";
 
-            // Cargar barberos en el select
             const barberoSelect = document.getElementById("barberoSelect");
             barberoSelect.innerHTML = '<option value="">Seleccionar barbero</option>';
             barberosLista.forEach(function(b) {
@@ -347,7 +338,6 @@
                 }
             });
         } else {
-            // Barbero: muestra input de texto readonly
             barberoSelectDiv.style.display = "none";
             barberoInput.style.display = "block";
             labelBarbero.style.display = "block";
@@ -424,7 +414,6 @@
     async function registrarCorte() {
         if (!usuarioActual) { alert("No hay usuario conectado"); return; }
 
-        // Determinar qué barbero registra el corte
         let idBarberoEnviar = usuarioActual.id;
         if (esJefe) {
             const barberoSelect = document.getElementById("barberoSelect");
@@ -445,7 +434,6 @@
         if (!descripcion) { alert("Ingresá una descripción"); return; }
         if (formaPago === "TRANSFERENCIA" && !nombreTransferencia) { alert("Ingresá el nombre de la transferencia"); return; }
 
-        // Obtener fecha si es jefe y está seleccionada
         let fechaEnviar = null;
         if (esJefe) {
             const fechaInput = document.getElementById("fechaCorte");
@@ -580,7 +568,7 @@
         const descripcion = atencion.descripcion || "-";
         let pago = atencion.formaPago || "-";
         if (atencion.formaPago === "TRANSFERENCIA") {
-            pago = '<div class="pago-transferencia">TRANSFERENCIA</div><div class="transferencia"> ' + (atencion.nombreTransferencia || "-") + '</div>';
+            pago = '<div class="pago-transferencia">TRANSFERENCIA</div><div class="transferencia">👤 ' + (atencion.nombreTransferencia || "-") + '</div>';
         }
         const puedeEliminar = esJefe || (usuarioActual && atencion.barbero && atencion.barbero.idBarbero === usuarioActual.id);
         const horaMostrar = atencion.horaLlegada || "-";
@@ -606,8 +594,23 @@
         vistaSemanal = (modo === 'semana');
         const btnDia = document.getElementById('btnDia');
         const btnSemana = document.getElementById('btnSemana');
-        if (vistaSemanal) { btnDia.style.background = 'var(--gris-boton)'; btnSemana.style.background = '#25c76f'; }
-        else { btnDia.style.background = '#25c76f'; btnSemana.style.background = 'var(--gris-boton)'; }
+        const fechaContainer = document.getElementById('fechaSelectorContainer');
+        const semanaContainer = document.getElementById('semanaSelectorContainer');
+        
+        if (vistaSemanal) {
+            btnDia.style.background = 'var(--gris-boton)';
+            btnSemana.style.background = '#25c76f';
+            if (fechaContainer) fechaContainer.style.display = 'none';
+            if (semanaContainer) {
+                semanaContainer.style.display = 'block';
+                poblarSelectorSemanas();
+            }
+        } else {
+            btnDia.style.background = '#25c76f';
+            btnSemana.style.background = 'var(--gris-boton)';
+            if (fechaContainer) fechaContainer.style.display = 'block';
+            if (semanaContainer) semanaContainer.style.display = 'none';
+        }
         cargarResumenJefe();
     }
 
@@ -624,6 +627,86 @@
         return fechaCorte >= inicioSemana && fechaCorte <= finSemana;
     }
 
+    function perteneceASemana(fecha, semana) {
+        if (!fecha || !semana) return false;
+        const f = new Date(fecha);
+        const inicio = new Date(semana.inicio);
+        const fin = new Date(semana.fin);
+        return f >= inicio && f <= fin;
+    }
+
+    function generarSemanasDelAnio() {
+        const anio = new Date().getFullYear();
+        const semanas = [];
+        const primerDia = new Date(anio, 0, 1);
+        const diaSemana = primerDia.getDay();
+        const ajuste = diaSemana === 0 ? 6 : diaSemana - 1;
+        const primerLunes = new Date(primerDia);
+        primerLunes.setDate(primerDia.getDate() - ajuste);
+        let lunes = new Date(primerLunes);
+        while (lunes.getFullYear() <= anio) {
+            const domingo = new Date(lunes);
+            domingo.setDate(lunes.getDate() + 6);
+            const inicioStr = lunes.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'});
+            const finYear = domingo.getFullYear() !== lunes.getFullYear() ? '/' + domingo.getFullYear().toString().slice(-2) : '';
+            const finStr = domingo.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'}) + finYear;
+            semanas.push({
+                inicio: new Date(lunes),
+                fin: new Date(domingo),
+                label: 'Semana del ' + inicioStr + ' - ' + finStr
+            });
+            lunes.setDate(lunes.getDate() + 7);
+        }
+        return semanas;
+    }
+
+    function poblarSelectorSemanas() {
+        const select = document.getElementById('semanaSelector');
+        const semanas = generarSemanasDelAnio();
+        const hoy = new Date();
+        let semanaActualIdx = -1;
+        select.innerHTML = '';
+        semanas.forEach(function(s, idx) {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = s.label;
+            if (hoy >= s.inicio && hoy <= s.fin) semanaActualIdx = idx;
+            select.appendChild(opt);
+        });
+        if (semanaActualIdx >= 0) {
+            select.value = semanaActualIdx;
+            semanaSeleccionada = semanas[semanaActualIdx];
+        } else {
+            semanaSeleccionada = semanas[semanas.length - 1];
+        }
+    }
+
+    function cambiarSemanaSeleccionada() {
+        const select = document.getElementById('semanaSelector');
+        const semanas = generarSemanasDelAnio();
+        semanaSeleccionada = semanas[Number(select.value)];
+        cargarResumenJefe();
+    }
+
+    function obtenerSemanaFiltro() {
+        if (vistaSemanal && semanaSeleccionada) return semanaSeleccionada;
+        const hoy = new Date();
+        const diaSemana = hoy.getDay();
+        const lunes = new Date(hoy);
+        lunes.setDate(hoy.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+        lunes.setHours(0, 0, 0, 0);
+        const domingo = new Date(lunes);
+        domingo.setDate(lunes.getDate() + 6);
+        domingo.setHours(23, 59, 59, 999);
+        return { inicio: lunes, fin: domingo };
+    }
+
+    function filtrarPorVista(atencion) {
+        if (!atencion.fecha) return false;
+        if (vistaSemanal) return perteneceASemana(atencion.fecha, obtenerSemanaFiltro());
+        return coincideFecha(atencion.fecha);
+    }
+
     async function cargarResumenJefe() {
         try {
             const selector = document.getElementById("fechaSelector");
@@ -637,17 +720,21 @@
             const barberosMap = {};
             barberosData.forEach(b => { barberosMap[b.idBarbero] = b; });
 
-            const cortesHoy = atenciones.filter(function(a) {
-                if (vistaSemanal) return esDeEstaSemana(a.fecha);
-                else return coincideFecha(a.fecha);
-            });
+            const cortesHoy = atenciones.filter(filtrarPorVista);
 
             const tituloEl = document.getElementById('tituloResumen');
             if (tituloEl) tituloEl.textContent = vistaSemanal ? 'Resumen semanal' : 'Resumen del día';
 
-            const filtro = obtenerFechaFiltro();
-            const textoFecha = filtro.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-            document.getElementById("fechaJefe").textContent = textoFecha;
+            const fechaJefeEl = document.getElementById('fechaJefe');
+            if (vistaSemanal && semanaSeleccionada) {
+                const ini = semanaSeleccionada.inicio.toLocaleDateString('es-AR', {day:'2-digit', month:'long'});
+                const fin = semanaSeleccionada.fin.toLocaleDateString('es-AR', {day:'2-digit', month:'long', year:'numeric'});
+                fechaJefeEl.textContent = ini + ' al ' + fin;
+            } else {
+                const filtro = obtenerFechaFiltro();
+                const textoFecha = filtro.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+                fechaJefeEl.textContent = textoFecha;
+            }
 
             let facturacion = 0, totalEfectivo = 0, totalTransferencia = 0, comisionesBarberos = 0, gananciaJefes = 0;
 
@@ -694,14 +781,17 @@
     }
 
     function verDetalleBarbero(idBarbero, nombre) {
-        const cortes = atenciones.filter(function(a) { return (coincideFecha(a.fecha) && a.barbero && a.barbero.idBarbero === idBarbero); });
+        const cortes = atenciones.filter(function(a) {
+            if (!a.barbero || a.barbero.idBarbero !== idBarbero) return false;
+            return filtrarPorVista(a);
+        });
         document.getElementById("listaBarberos").style.display = "none";
         document.getElementById("detalleJefe").style.display = "block";
-        document.getElementById("tituloDetalle").textContent = "Cortes de " + nombre;
+        document.getElementById("tituloDetalle").textContent = "Cortes de " + nombre + (vistaSemanal ? " (semana)" : "");
         const tabla = document.getElementById("tablaDetalleJefe");
         tabla.innerHTML = "";
         if (cortes.length === 0) {
-            tabla.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Este barbero no tiene cortes en esta fecha.</td></tr>';
+            tabla.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Este barbero no tiene cortes' + (vistaSemanal ? ' esta semana' : ' en esta fecha') + '.</td></tr>';
             return;
         }
         cortes.forEach(function(a) { agregarFilaCorte(tabla, a); });
@@ -720,7 +810,11 @@
 
         fetch("/barberos").then(r => r.json()).then(barberosData => {
             fetch("/atenciones").then(r => r.json()).then(atencionesData => {
-                const cortesDia = atencionesData.filter(function(a) { return coincideFecha(a.fecha); });
+                const cortesDia = atencionesData.filter(function(a) {
+                    if (!a.fecha) return false;
+                    if (vistaSemanal) return perteneceASemana(a.fecha, obtenerSemanaFiltro());
+                    return coincideFecha(a.fecha);
+                });
                 cortesDia.sort(function(a, b) { return (a.horaLlegada || "00:00").localeCompare(b.horaLlegada || "00:00"); });
 
                 let totalFacturado = 0, totalComisiones = 0, totalEfectivo = 0, totalTransferencia = 0;
@@ -804,8 +898,10 @@
             await cargarAtenciones();
             const luciano = barberosLista.find(b => b.nombre.toLowerCase() === 'luciano');
             if (!luciano) { alert('No se encontró al barbero Luciano'); return; }
-            const { lunes, domingo } = obtenerSemanaActual();
-            const cortesLuciano = atenciones.filter(a => a.barbero && a.barbero.idBarbero === luciano.idBarbero && esDeEstaSemana(a.fecha));
+            const semanaPago = semanaSeleccionada || obtenerSemanaActual();
+            const lunes = semanaPago.inicio || semanaPago.lunes;
+            const domingo = semanaPago.fin || semanaPago.domingo;
+            const cortesLuciano = atenciones.filter(a => a.barbero && a.barbero.idBarbero === luciano.idBarbero && perteneceASemana(a.fecha, {inicio: lunes, fin: domingo}));
             let totalFacturado = 0;
             cortesLuciano.forEach(a => { totalFacturado += Number(a.precio || 0); });
             const pagoLuciano = totalFacturado * 0.50;
@@ -886,5 +982,6 @@
 
     iniciarApp();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33ead39afb57a90',t:'MTc4ODIwNzAwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33e8681787357e9',t:'MTc4ODIwNTQxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>
