@@ -3,10 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Barber Shop</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(129,199,132,0.15); }
         :root {
             --fondo: #0d0d0d;
             --fondo-card: #171717;
@@ -29,78 +32,92 @@
             --gris-boton-hover: #424242;
             --primary: #616161;
             --primary-hover: #757575;
+            --touch-min: 48px;
         }
-        body { margin: 0; min-height: 100vh; padding: 30px 15px; background: var(--fondo); color: var(--texto); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .contenedor { width: 100%; max-width: 1050px; margin: auto; }
-        #pantallaLogin { max-width: 430px; margin: 60px auto; }
-        .logo { text-align: center; margin-bottom: 30px; }
+        html { -webkit-text-size-adjust: 100%; }
+        body { margin: 0; min-height: 100vh; padding: 20px 16px; background: var(--fondo); color: var(--texto); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; line-height: 1.5; }
+        .contenedor { width: 100%; max-width: 100%; margin: auto; }
+        #pantallaLogin { max-width: 100%; margin: 40px auto 0; }
+        .logo { text-align: center; margin-bottom: 24px; }
         .logo-icono { width: 70px; height: 70px; margin: 0 auto 18px; border-radius: 50%; background: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 34px; }
-        .logo h1 { margin: 0; font-size: 30px; }
-        .logo p { margin-top: 8px; color: var(--texto-suave); font-size: 15px; }
-        .tarjeta-login { background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 18px; padding: 28px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
-        label { display: block; margin: 18px 0 8px; font-size: 14px; font-weight: bold; color: var(--texto-medio); }
-        input, select, textarea { width: 100%; padding: 13px 14px; border: 1px solid var(--borde); border-radius: 9px; outline: none; background: var(--fondo-input); color: white; font-size: 15px; transition: .2s; }
-        input:focus, select:focus, textarea:focus { border-color: #666; background: #292929; }
-        input::placeholder, textarea::placeholder { color: #777; }
+        .logo h1 { margin: 0; font-size: 26px; font-weight: 700; }
+        .logo p { margin-top: 6px; color: var(--texto-suave); font-size: 14px; }
+        .tarjeta-login { background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 20px; padding: 24px 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+        .tarjeta-login > button { background: #ffffff; color: #0d0d0d; }
+        .tarjeta-login > button:hover { background: #f5f5f5; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
+        label { display: block; margin: 14px 0 6px; font-size: 14px; font-weight: 600; color: var(--texto-medio); }
+        input, select, textarea { width: 100%; min-height: var(--touch-min); padding: 12px 14px; border: 1px solid var(--borde); border-radius: 12px; outline: none; background: var(--fondo-input); color: white; font-size: 16px; transition: border 0.2s; -webkit-appearance: none; appearance: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--verde); background: #2a2a2a; }
+        input::placeholder, textarea::placeholder { color: #666; }
         textarea { min-height: 100px; resize: vertical; }
-        button { width: 100%; padding: 13px 16px; margin-top: 18px; border: none; border-radius: 10px; background: var(--primary); color: white; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
-        button:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        button { width: 100%; min-height: var(--touch-min); padding: 14px 16px; margin-top: 12px; border: none; border-radius: 14px; background: var(--verde); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; touch-action: manipulation; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(129,199,132,0.3); }
         button:active { transform: translateY(0); }
         .boton-secundario { background: var(--gris-boton); color: var(--texto); }
-        .boton-secundario:hover { background: var(--gris-boton-hover); }
-        .boton-eliminar { width: auto; margin: 0; padding: 8px 14px; background: var(--rojo-suave); color: var(--rojo); font-size: 12px; font-weight: 600; border-radius: 6px; }
-        .boton-eliminar:hover { background: var(--rojo); color: white; }
-        .boton-detalle { width: auto; min-width: 135px; margin: 0; padding: 10px 15px; background: var(--primary); color: white; border-radius: 8px; }
-        .boton-detalle:hover { background: var(--primary-hover); }
-        .mensaje { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; color: var(--verde); }
+        .boton-secundario:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .boton-eliminar { width: auto; min-height: 36px; margin: 0; padding: 8px 12px; background: var(--rojo); color: white; font-size: 13px; font-weight: 600; border-radius: 8px; }
+        .boton-detalle { width: auto; min-width: 120px; min-height: 42px; margin: 0; padding: 10px 14px; background: var(--verde); color: white; border-radius: 10px; font-size: 14px; }
+        .mensaje { margin-top: 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--verde); }
         #app { display: none; }
-        .encabezado { text-align: center; margin-bottom: 28px; }
-        .encabezado h1 { margin: 0 0 7px; font-size: 30px; }
-        .encabezado h2 { margin-bottom: 8px; }
-        .fecha { color: var(--texto-suave); text-transform: capitalize; font-size: 14px; }
-        .usuario-actual { display: inline-block; margin-top: 12px; padding: 7px 12px; border-radius: 20px; background: #1d1d1d; color: var(--texto-medio); font-size: 13px; }
-        .menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 30px; }
-        .menu button { margin: 0; }
+        .encabezado { text-align: center; margin-bottom: 24px; }
+        .encabezado h1 { margin: 0 0 4px; font-size: 24px; font-weight: 700; }
+        .encabezado h2 { margin-bottom: 6px; font-size: 18px; }
+        .fecha { color: var(--texto-suave); text-transform: capitalize; font-size: 13px; }
+        .usuario-actual { display: inline-block; margin-top: 10px; padding: 6px 12px; border-radius: 20px; background: var(--fondo-card); color: var(--texto-medio); font-size: 13px; border: 1px solid var(--borde); }
+        .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+        .menu button { margin: 0; background: #ffffff; color: #0d0d0d; }
+        .menu button:hover { background: #f5f5f5; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
+        .menu button.boton-secundario { background: var(--gris-boton); color: var(--texto); }
+        .menu button.boton-secundario:hover { background: var(--gris-boton-hover); }
         .seccion { display: none; }
-        .seccion.activa { display: block; animation: aparecer .2s ease; }
-        @keyframes aparecer { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .formulario { max-width: 620px; margin: auto; padding: 25px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 16px; }
-        .precio { margin-top: 22px; padding: 20px; border: 1px solid var(--borde); border-radius: 12px; background: #202020; text-align: center; }
-        .precio-label { display: block; margin-bottom: 5px; color: var(--texto-suave); font-size: 12px; text-transform: uppercase; }
-        .precio-valor { font-size: 30px; font-weight: bold; }
+        .seccion.activa { display: block; animation: aparecer 0.25s ease; }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .formulario { max-width: 100%; margin: auto; padding: 20px 18px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 18px; }
+        .precio { margin-top: 20px; padding: 18px; border: 1px solid var(--borde); border-radius: 14px; background: #1a1a1a; text-align: center; }
+        .precio-label { display: block; margin-bottom: 4px; color: var(--texto-suave); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .precio-valor { font-size: 28px; font-weight: 700; color: var(--verde); }
         #transferenciaDiv, #fechaSelectorDiv, #barberoSelectorDiv { display: none; }
-        .resumen { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
-        .tarjeta { padding: 24px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
-        .tarjeta:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-        .tarjeta h3 { margin: 0 0 12px; color: var(--texto-suave); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .numero { font-size: 28px; font-weight: 600; color: var(--texto); }
-        .titulo-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .titulo-seccion h2 { margin: 0; }
-        .tabla-contenedor { overflow-x: auto; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; }
-        table { width: 100%; border-collapse: collapse; min-width: 720px; }
-        th, td { padding: 14px 12px; border-bottom: 1px solid var(--borde); text-align: left; vertical-align: middle; }
-        th { color: var(--texto-suave); font-size: 11px; font-weight: 600; text-transform: uppercase; background: var(--fondo-input); letter-spacing: 0.5px; }
-        td { color: var(--texto-medio); font-size: 13px; }
-        tbody tr:hover { background: var(--fondo-input); }
+        .resumen { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
+        .tarjeta { padding: 18px 14px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 16px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .tarjeta:active { transform: scale(0.98); }
+        .tarjeta h3 { margin: 0 0 8px; color: var(--texto-suave); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .numero { font-size: 24px; font-weight: 700; }
+        .titulo-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
+        .titulo-seccion h2 { margin: 0; font-size: 17px; }
+        .titulo-seccion button { width: auto; min-height: 38px; margin: 0; padding: 8px 14px; background: var(--azul); color: white; font-size: 12px; border-radius: 10px; }
+        .tabla-contenedor { overflow-x: auto; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 14px; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 12px 10px; border-bottom: 1px solid var(--borde); text-align: left; vertical-align: middle; }
+        th { color: var(--texto-suave); font-size: 10px; font-weight: 700; text-transform: uppercase; background: #1a1a1a; letter-spacing: 0.5px; position: sticky; top: 0; }
+        td { color: var(--texto-medio); font-size: 14px; }
+        tbody tr:active { background: #1f1f1f; }
         tbody tr:last-child td { border-bottom: none; }
         .pago-transferencia { color: var(--azul); font-weight: 600; }
-        .transferencia { margin-top: 4px; color: var(--texto-suave); font-size: 12px; font-weight: 400; }
-        .barbero-card { margin-bottom: 12px; padding: 20px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 12px; transition: box-shadow 0.2s; }
-        .barbero-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
-        .barbero-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-        .barbero-header h3 { margin: 0; font-size: 17px; color: var(--texto); }
-        .barbero-info { margin-top: 8px; color: var(--texto-suave); font-size: 13px; }
-        .sin-cortes { padding: 25px; border: 1px solid var(--borde); border-radius: 12px; background: var(--fondo-card); color: var(--texto-suave); text-align: center; }
-        #detalleJefe { margin-top: 25px; }
-        #tituloDetalle { margin-bottom: 15px; }
+        .transferencia { margin-top: 3px; color: var(--texto-suave); font-size: 11px; font-weight: 400; }
+        .barbero-card { margin-bottom: 10px; padding: 16px; background: var(--fondo-card); border: 1px solid var(--borde); border-radius: 14px; transition: box-shadow 0.2s; }
+        .barbero-card:active { background: #1f1f1f; }
+        .barbero-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .barbero-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+        .barbero-info { margin-top: 6px; color: var(--texto-suave); font-size: 12px; line-height: 1.5; }
+        .sin-cortes { padding: 24px; border: 1px solid var(--borde); border-radius: 12px; background: var(--fondo-card); color: var(--texto-suave); text-align: center; font-size: 14px; }
+        #detalleJefe { margin-top: 20px; }
+        #tituloDetalle { margin-bottom: 12px; }
         @media (max-width: 700px) {
-            body { padding: 20px 10px; }
-            #pantallaLogin { margin: 30px auto; }
-            .logo h1, .encabezado h1 { font-size: 25px; }
-            .menu, .resumen { grid-template-columns: 1fr; }
-            .formulario { padding: 20px; }
+            body { padding: 16px 12px; }
+            .encabezado h1 { font-size: 22px; }
+            .menu { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .menu button { font-size: 13px; padding: 12px 10px; }
+            .resumen { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .tarjeta { padding: 14px 10px; }
+            .numero { font-size: 22px; }
+            .formulario { padding: 16px 14px; }
             .barbero-header { flex-direction: column; align-items: stretch; }
-            .boton-detalle { width: 100%; }
+            .boton-detalle { width: 100%; text-align: center; margin-top: 8px; }
+            table { min-width: 500px; }
+        }
+        @media (max-width: 380px) {
+            .menu { grid-template-columns: 1fr; }
+            .resumen { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -215,6 +232,10 @@
                 <input type="date" id="fechaSelector" style="width:auto; display:inline-block; padding:10px 15px;" onchange="cargarResumenJefeConFecha()">
                 <button onclick="volverAHoy()" style="width:auto; display:inline-block; margin-left:10px; padding:10px 15px;" class="boton-secundario">HOY</button>
             </div>
+            <div id="semanaSelectorContainer" style="text-align:center; margin-bottom:25px; display:none;">
+                <label style="display:inline-block; margin-right:10px;">Ver semana:</label>
+                <select id="semanaSelector" style="width:auto; display:inline-block; padding:10px 15px; background:var(--fondo-input); color:white; border:1px solid var(--borde); border-radius:9px; font-size:15px;" onchange="cambiarSemanaSeleccionada()"></select>
+            </div>
             <div class="resumen">
                 <div class="tarjeta"><h3>Cortes</h3><div class="numero" id="totalCortesJefe">0</div></div>
                 <div class="tarjeta"><h3>Facturación</h3><div class="numero" id="facturacionJefe">$0</div></div>
@@ -272,6 +293,8 @@
     let servicios = [];
     let barberosLista = [];
     let vistaSemanal = false;
+    let semanaSeleccionada = null;
+    const MESES = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
     const PORCENTAJE_BARBERO = 0.50;
     const PORCENTAJE_JEFE = 1.00;
 
@@ -507,6 +530,16 @@
     }
     function cargarResumenJefeConFecha() { cargarResumenJefe(); }
 
+    function cargarResumenBarberoConFecha() { cargarResumenBarbero(); }
+    function volverAHoyBarbero() {
+        const hoy = new Date();
+        const a = hoy.getFullYear();
+        const m = String(hoy.getMonth() + 1).padStart(2, '0');
+        const d = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById("fechaSelectorBarbero").value = a + "-" + m + "-" + d;
+        cargarResumenBarbero();
+    }
+
     async function cargarResumenBarbero() {
         try {
             await cargarAtenciones();
@@ -590,32 +623,113 @@
         const btnDia = document.getElementById('btnDia');
         const btnSemana = document.getElementById('btnSemana');
         const fechaContainer = document.getElementById('fechaSelectorContainer');
+        const semanaContainer = document.getElementById('semanaSelectorContainer');
         
         if (vistaSemanal) {
             btnDia.style.background = 'var(--gris-boton)';
-            btnSemana.style.background = '#25c76f';
-            // Ocultar selector de fecha en modo semanal
+            btnSemana.style.background = '#2e7d32';
             if (fechaContainer) fechaContainer.style.display = 'none';
+            if (semanaContainer) {
+                semanaContainer.style.display = 'block';
+                poblarSelectorSemanas();
+            }
         } else {
-            btnDia.style.background = '#25c76f';
+            btnDia.style.background = '#2e7d32';
             btnSemana.style.background = 'var(--gris-boton)';
-            // Mostrar selector de fecha en modo diario
             if (fechaContainer) fechaContainer.style.display = 'block';
+            if (semanaContainer) semanaContainer.style.display = 'none';
         }
         cargarResumenJefe();
     }
 
-    function esDeEstaSemana(fecha) {
-        if (!fecha) return false;
-        const fechaCorte = new Date(fecha);
+    function perteneceASemana(fecha, semana) {
+        if (!fecha || !semana) return false;
+        const f = new Date(fecha);
+        const inicio = new Date(semana.inicio);
+        const fin = new Date(semana.fin);
+        return f >= inicio && f <= fin;
+    }
+
+    function generarSemanasDelAnio() {
+        const anio = new Date().getFullYear();
+        const semanas = [];
+        const primerDia = new Date(anio, 0, 1);
+        const diaSemana = primerDia.getDay();
+        const ajuste = diaSemana === 0 ? 6 : diaSemana - 1;
+        const primerLunes = new Date(primerDia);
+        primerLunes.setDate(primerDia.getDate() - ajuste);
+        let lunes = new Date(primerLunes);
+        while (lunes.getFullYear() <= anio) {
+            const domingo = new Date(lunes);
+            domingo.setDate(lunes.getDate() + 6);
+            const diaIni = String(lunes.getDate()).padStart(2, '0');
+            const mesIni = String(lunes.getMonth() + 1).padStart(2, '0');
+            const diaFin = String(domingo.getDate()).padStart(2, '0');
+            const mesFin = String(domingo.getMonth() + 1).padStart(2, '0');
+            semanas.push({
+                inicio: new Date(lunes),
+                fin: new Date(domingo),
+                mesIndex: lunes.getMonth(),
+                label: 'Semana del ' + diaIni + '/' + mesIni + ' - ' + diaFin + '/' + mesFin
+            });
+            lunes.setDate(lunes.getDate() + 7);
+        }
+        return semanas;
+    }
+
+    function poblarSelectorSemanas() {
+        const select = document.getElementById('semanaSelector');
+        const semanas = generarSemanasDelAnio();
         const hoy = new Date();
-        const inicioSemana = new Date(hoy);
-        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
-        inicioSemana.setHours(0, 0, 0, 0);
-        const finSemana = new Date(inicioSemana);
-        finSemana.setDate(inicioSemana.getDate() + 6);
-        finSemana.setHours(23, 59, 59, 999);
-        return fechaCorte >= inicioSemana && fechaCorte <= finSemana;
+        let semanaActualIdx = -1;
+        select.innerHTML = '';
+        let mesActual = -1;
+        let grupo = null;
+        semanas.forEach(function(s, idx) {
+            if (hoy >= s.inicio && hoy <= s.fin) semanaActualIdx = idx;
+            if (s.mesIndex !== mesActual) {
+                mesActual = s.mesIndex;
+                grupo = document.createElement('optgroup');
+                grupo.label = MESES[mesActual];
+                select.appendChild(grupo);
+            }
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = s.label;
+            grupo.appendChild(opt);
+        });
+        if (semanaActualIdx >= 0) {
+            select.value = semanaActualIdx;
+            semanaSeleccionada = semanas[semanaActualIdx];
+        } else {
+            semanaSeleccionada = semanas[semanas.length - 1];
+        }
+    }
+
+    function cambiarSemanaSeleccionada() {
+        const select = document.getElementById('semanaSelector');
+        const semanas = generarSemanasDelAnio();
+        semanaSeleccionada = semanas[Number(select.value)];
+        cargarResumenJefe();
+    }
+
+    function obtenerSemanaFiltro() {
+        if (vistaSemanal && semanaSeleccionada) return semanaSeleccionada;
+        const hoy = new Date();
+        const diaSemana = hoy.getDay();
+        const lunes = new Date(hoy);
+        lunes.setDate(hoy.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+        lunes.setHours(0, 0, 0, 0);
+        const domingo = new Date(lunes);
+        domingo.setDate(lunes.getDate() + 6);
+        domingo.setHours(23, 59, 59, 999);
+        return { inicio: lunes, fin: domingo };
+    }
+
+    function filtrarPorVista(atencion) {
+        if (!atencion.fecha) return false;
+        if (vistaSemanal) return perteneceASemana(atencion.fecha, obtenerSemanaFiltro());
+        return coincideFecha(atencion.fecha);
     }
 
     async function cargarResumenJefe() {
@@ -631,17 +745,21 @@
             const barberosMap = {};
             barberosData.forEach(b => { barberosMap[b.idBarbero] = b; });
 
-            const cortesHoy = atenciones.filter(function(a) {
-                if (vistaSemanal) return esDeEstaSemana(a.fecha);
-                else return coincideFecha(a.fecha);
-            });
+            const cortesHoy = atenciones.filter(filtrarPorVista);
 
             const tituloEl = document.getElementById('tituloResumen');
             if (tituloEl) tituloEl.textContent = vistaSemanal ? 'Resumen semanal' : 'Resumen del día';
 
-            const filtro = obtenerFechaFiltro();
-            const textoFecha = filtro.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-            document.getElementById("fechaJefe").textContent = textoFecha;
+            const fechaJefeEl = document.getElementById('fechaJefe');
+            if (vistaSemanal && semanaSeleccionada) {
+                const ini = semanaSeleccionada.inicio.toLocaleDateString('es-AR', {day:'2-digit', month:'long'});
+                const fin = semanaSeleccionada.fin.toLocaleDateString('es-AR', {day:'2-digit', month:'long', year:'numeric'});
+                fechaJefeEl.textContent = ini + ' al ' + fin;
+            } else {
+                const filtro = obtenerFechaFiltro();
+                const textoFecha = filtro.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+                fechaJefeEl.textContent = textoFecha;
+            }
 
             let facturacion = 0, totalEfectivo = 0, totalTransferencia = 0, comisionesBarberos = 0, gananciaJefes = 0;
 
@@ -690,8 +808,7 @@
     function verDetalleBarbero(idBarbero, nombre) {
         const cortes = atenciones.filter(function(a) {
             if (!a.barbero || a.barbero.idBarbero !== idBarbero) return false;
-            if (vistaSemanal) return esDeEstaSemana(a.fecha);
-            return coincideFecha(a.fecha);
+            return filtrarPorVista(a);
         });
         document.getElementById("listaBarberos").style.display = "none";
         document.getElementById("detalleJefe").style.display = "block";
@@ -718,7 +835,11 @@
 
         fetch("/barberos").then(r => r.json()).then(barberosData => {
             fetch("/atenciones").then(r => r.json()).then(atencionesData => {
-                const cortesDia = atencionesData.filter(function(a) { return coincideFecha(a.fecha); });
+                const cortesDia = atencionesData.filter(function(a) {
+                    if (!a.fecha) return false;
+                    if (vistaSemanal) return perteneceASemana(a.fecha, obtenerSemanaFiltro());
+                    return coincideFecha(a.fecha);
+                });
                 cortesDia.sort(function(a, b) { return (a.horaLlegada || "00:00").localeCompare(b.horaLlegada || "00:00"); });
 
                 let totalFacturado = 0, totalComisiones = 0, totalEfectivo = 0, totalTransferencia = 0;
@@ -802,8 +923,10 @@
             await cargarAtenciones();
             const luciano = barberosLista.find(b => b.nombre.toLowerCase() === 'luciano');
             if (!luciano) { alert('No se encontró al barbero Luciano'); return; }
-            const { lunes, domingo } = obtenerSemanaActual();
-            const cortesLuciano = atenciones.filter(a => a.barbero && a.barbero.idBarbero === luciano.idBarbero && esDeEstaSemana(a.fecha));
+            const semanaPago = semanaSeleccionada || obtenerSemanaActual();
+            const lunes = semanaPago.inicio || semanaPago.lunes;
+            const domingo = semanaPago.fin || semanaPago.domingo;
+            const cortesLuciano = atenciones.filter(a => a.barbero && a.barbero.idBarbero === luciano.idBarbero && perteneceASemana(a.fecha, {inicio: lunes, fin: domingo}));
             let totalFacturado = 0;
             cortesLuciano.forEach(a => { totalFacturado += Number(a.precio || 0); });
             const pagoLuciano = totalFacturado * 0.50;
@@ -884,6 +1007,6 @@
 
     iniciarApp();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33f79c61e750c2b',t:'MTc4ODIxNTM4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
