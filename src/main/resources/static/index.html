@@ -835,10 +835,11 @@
             
             if (cortesBarberos.length > 0) {
                 distribucionDiv.style.display = "block";
-                let html = '<div style="overflow-x:auto;"><table style="width:100%; min-width:500px; border-collapse:collapse;">';
+                let html = '<div style="overflow-x:auto;"><table style="width:100%; min-width:600px; border-collapse:collapse;">';
                 html += '<thead><tr style="background:#1a1a1a;">';
                 html += '<th style="padding:10px; text-align:left; font-size:11px; color:var(--texto-suave);">BARBERO</th>';
                 html += '<th style="padding:10px; text-align:right; font-size:11px; color:var(--texto-suave);">PRECIO</th>';
+                html += '<th style="padding:10px; text-align:right; font-size:11px; color:var(--verde);">PROPINA</th>';
                 html += '<th style="padding:10px; text-align:right; font-size:11px; color:var(--naranja);">BARBERO 50%</th>';
                 html += '<th style="padding:10px; text-align:right; font-size:11px; color:var(--violeta);">GABI 25%</th>';
                 html += '<th style="padding:10px; text-align:right; font-size:11px; color:var(--violeta);">DIEGO 25%</th>';
@@ -846,6 +847,7 @@
                 
                 cortesBarberos.forEach(function(a) {
                     const precio = Number(a.precio || 0);
+                    const propina = Number(a.propina || 0);
                     const nombreBarbero = a.barbero ? a.barbero.nombre : "?";
                     const comisionBarbero = precio * 0.50;
                     const comisionGabi = precio * 0.25;
@@ -854,17 +856,21 @@
                     html += '<tr style="border-bottom:1px solid var(--borde);">';
                     html += '<td style="padding:10px; font-size:14px; color:var(--texto);">' + nombreBarbero + ' <span style="color:var(--texto-suave); font-size:11px;">(' + (a.servicio ? a.servicio.nombre : '') + ')</span></td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--texto-medio);">' + dinero(precio) + '</td>';
-                    html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--naranja); font-weight:600;">' + dinero(comisionBarbero) + '</td>';
+                    html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--verde); font-weight:600;">' + (propina > 0 ? dinero(propina) : '-') + '</td>';
+                    html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--naranja); font-weight:600;">' + dinero(comisionBarbero) + (propina > 0 ? ' <span style="font-size:10px; color:var(--texto-suave);">+' + dinero(propina) + '</span>' : '') + '</td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--violeta); font-weight:600;">' + dinero(comisionGabi) + '</td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--violeta); font-weight:600;">' + dinero(comisionDiego) + '</td>';
                     html += '</tr>';
                 });
                 
                 // Fila de totales
+                const totalPrecios = cortesBarberos.reduce((sum, a) => sum + Number(a.precio || 0), 0);
+                const totalPropinasTabla = cortesBarberos.reduce((sum, a) => sum + Number(a.propina || 0), 0);
                 html += '<tr style="background:#1a1a1a; font-weight:700;">';
                 html += '<td style="padding:12px 10px; font-size:13px; color:var(--texto);">TOTAL</td>';
-                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--texto-medio);">' + dinero(cortesBarberos.reduce((sum, a) => sum + Number(a.precio || 0), 0)) + '</td>';
-                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--naranja);">' + dinero(comisionesBarberos) + '</td>';
+                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--texto-medio);">' + dinero(totalPrecios) + '</td>';
+                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--verde);">' + (totalPropinasTabla > 0 ? dinero(totalPropinasTabla) : '-') + '</td>';
+                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--naranja);">' + dinero(comisionesBarberos) + (totalPropinasTabla > 0 ? ' <span style="font-size:10px; color:var(--texto-suave);">+' + dinero(totalPropinasTabla) + '</span>' : '') + '</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--violeta);">' + dinero(gananciaGabi) + '</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--violeta);">' + dinero(gananciaDiego) + '</td>';
                 html += '</tr>';
@@ -886,7 +892,11 @@
                 const icono = esJefeBarbero ? "👑" : "✂";
                 const cortes = cortesHoy.filter(function(a) { return (a.barbero && String(a.barbero.idBarbero) === String(id)); });
                 let total = 0;
-                cortes.forEach(function(a) { total += Number(a.precio || 0); });
+                let totalPropinaBarbero = 0;
+                cortes.forEach(function(a) { 
+                    total += Number(a.precio || 0); 
+                    totalPropinaBarbero += Number(a.propina || 0);
+                });
                 const ganancia = esJefeBarbero ? total * porcentajeBarbero : total * PORCENTAJE_BARBERO;
                 const porcentajeTexto = esJefeBarbero ? Math.round(porcentajeBarbero * 100) : Math.round(PORCENTAJE_BARBERO * 100);
                 const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
@@ -897,13 +907,16 @@
                     const diego25 = total * 0.25;
                     infoExtra = '<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--borde); font-size:11px; line-height:1.6;">' +
                         '<span style="color:var(--violeta);">💎 Gabi 25%: ' + dinero(gabi25) + '</span> &nbsp;|&nbsp; ' +
-                        '<span style="color:var(--violeta);">💎 Diego 25%: ' + dinero(diego25) + '</span>' +
-                        '</div>';
+                        '<span style="color:var(--violeta);">💎 Diego 25%: ' + dinero(diego25) + '</span>';
+                    if (totalPropinaBarbero > 0) {
+                        infoExtra += '<br><span style="color:var(--verde);">💰 Propinas: ' + dinero(totalPropinaBarbero) + ' (100% barbero)</span>';
+                    }
+                    infoExtra += '</div>';
                 }
 
                 const card = document.createElement("div");
                 card.className = "barbero-card";
-                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
+                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + (totalPropinaBarbero > 0 ? ' + ' + dinero(totalPropinaBarbero) + ' prop.' : '') + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia + totalPropinaBarbero) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
                 lista.appendChild(card);
             });
         } catch (error) { console.error(error); }
@@ -1137,6 +1150,6 @@
 
     iniciarApp();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33fb6868f7cadae',t:'MTc4ODIxNzg3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 
 </html>
