@@ -42,8 +42,11 @@ public class Atencion {
     @Column(name = "forma_pago", nullable = false)
     private String formaPago = "EFECTIVO";
 
-    @Column(name = "descripcion", nullable = false)
-    private String descripcion = "";
+@Column(name = "descripcion", nullable = false)
+private String descripcion = "";
+
+@Column(name = "propina")
+private Double propina = 0.0;
 
     public Atencion() {
     }
@@ -134,5 +137,13 @@ public class Atencion {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Double getPropina() {
+        return propina;
+    }
+
+    public void setPropina(Double propina) {
+        this.propina = propina;
     }
 }
