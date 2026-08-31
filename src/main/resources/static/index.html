@@ -543,12 +543,14 @@
     async function cargarResumenBarbero() {
         try {
             await cargarAtenciones();
-            let porcentajeUsuario = PORCENTAJE_BARBERO;
+            
+            // Si es jefe, usa 100%. Si es barbero, usa 50%
+            let porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
             try {
                 const respuestaBarbero = await fetch("/barberos/" + usuarioActual.id);
                 if (respuestaBarbero.ok) {
                     const datosBarbero = await respuestaBarbero.json();
-                    porcentajeUsuario = datosBarbero.porcentajeComision || (esJefe ? 1.00 : 0.40);
+                    porcentajeUsuario = datosBarbero.porcentajeComision || (esJefe ? 1.00 : 0.50);
                 }
             } catch (e) { porcentajeUsuario = esJefe ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO; }
 
@@ -590,7 +592,8 @@
     function agregarFilaCorte(tabla, atencion) {
         const fila = document.createElement("tr");
         const precio = Number(atencion.precio || 0);
-        const porcentaje = atencion.barbero && atencion.barbero.porcentajeComision ? atencion.barbero.porcentajeComision : (atencion.barbero && atencion.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
+        const esJefeCorte = atencion.barbero && atencion.barbero.esJefe === true;
+        const porcentaje = esJefeCorte ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
         const ganancia = precio * porcentaje;
         const servicio = atencion.servicio ? atencion.servicio.nombre : "-";
         const descripcion = atencion.descripcion || "-";
@@ -766,10 +769,19 @@
             cortesHoy.forEach(function(a) {
                 const precio = Number(a.precio || 0);
                 facturacion += precio;
-                const porcentaje = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : (a.barbero && a.barbero.esJefe === true ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO);
-                const comision = precio * porcentaje;
-                if (a.barbero && a.barbero.esJefe === true) gananciaJefes += comision;
-                else comisionesBarberos += comision;
+                
+                if (a.barbero && a.barbero.esJefe === true) {
+                    // Si es jefe, se lleva el 100%
+                    const comision = precio * PORCENTAJE_JEFE;
+                    gananciaJefes += comision;
+                } else {
+                    // Si es barbero: 50% para él, 25% para Gabi, 25% para Diego
+                    const comisionBarbero = precio * PORCENTAJE_BARBERO;
+                    const comisionJefes = precio * 0.50; // Los otros 50% van a los jefes
+                    comisionesBarberos += comisionBarbero;
+                    gananciaJefes += comisionJefes;
+                }
+                
                 if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
                 else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
             });
@@ -793,8 +805,8 @@
                 const cortes = cortesHoy.filter(function(a) { return (a.barbero && String(a.barbero.idBarbero) === String(id)); });
                 let total = 0;
                 cortes.forEach(function(a) { total += Number(a.precio || 0); });
-                const ganancia = total * porcentajeBarbero;
-                const porcentajeTexto = Math.round(porcentajeBarbero * 100);
+                const ganancia = esJefeBarbero ? total * porcentajeBarbero : total * PORCENTAJE_BARBERO;
+                const porcentajeTexto = esJefeBarbero ? Math.round(porcentajeBarbero * 100) : Math.round(PORCENTAJE_BARBERO * 100);
                 const etiquetaComision = esJefeBarbero ? "Ganancia" : "Comisión";
 
                 const card = document.createElement("div");
@@ -842,21 +854,32 @@
                 });
                 cortesDia.sort(function(a, b) { return (a.horaLlegada || "00:00").localeCompare(b.horaLlegada || "00:00"); });
 
-                let totalFacturado = 0, totalComisiones = 0, totalEfectivo = 0, totalTransferencia = 0;
+                let totalFacturado = 0, totalComisiones = 0, totalEfectivo = 0, totalTransferencia = 0, totalGananciaJefes = 0;
                 cortesDia.forEach(function(a) {
                     var precio = Number(a.precio || 0);
                     totalFacturado += precio;
-                    var pct = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : (a.barbero && a.barbero.esJefe ? 1.00 : 0.40);
-                    totalComisiones += (precio * pct);
+                    var esJefeBarbero = a.barbero && a.barbero.esJefe;
+                    if (esJefeBarbero) {
+                        // Si es jefe, se lleva el 100%
+                        var comision = precio * PORCENTAJE_JEFE;
+                        totalComisiones += comision;
+                        totalGananciaJefes += comision;
+                    } else {
+                        // Si es barbero: 50% para él, 25% para Gabi, 25% para Diego
+                        var comisionBarbero = precio * PORCENTAJE_BARBERO;
+                        var comisionJefes = precio * 0.50;
+                        totalComisiones += comisionBarbero;
+                        totalGananciaJefes += comisionJefes;
+                    }
                     if (a.formaPago === "EFECTIVO") totalEfectivo += precio;
                     else if (a.formaPago === "TRANSFERENCIA") totalTransferencia += precio;
                 });
 
-                let totalBarberia = totalFacturado - totalComisiones;
+                let totalBarberia = totalFacturado - totalComisiones - totalGananciaJefes;
                 let csv = '';
                 const nombreExport = document.getElementById("nombreApp").textContent || "BARBER SHOP";
                 csv += nombreExport + '\nReporte de Cortes\nFecha:,' + fechaTexto + '\nGenerado:,' + new Date().toLocaleString("es-AR") + '\n\n';
-                csv += 'RESUMEN GENERAL\nTotal de Cortes:,' + cortesDia.length + '\nTotal Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\nComisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\nGanancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
+                csv += 'RESUMEN GENERAL\nTotal de Cortes:,' + cortesDia.length + '\nTotal Facturado:,"$' + totalFacturado.toLocaleString("es-AR") + '"\nComisiones Barberos:,"$' + totalComisiones.toLocaleString("es-AR") + '"\nGanancia Jefes:,"$' + totalGananciaJefes.toLocaleString("es-AR") + '"\nGanancia Barbería:,"$' + totalBarberia.toLocaleString("es-AR") + '"\n\n';
                 csv += 'FORMAS DE PAGO\nEfectivo:,"$' + totalEfectivo.toLocaleString("es-AR") + '"\nTransferencia:,"$' + totalTransferencia.toLocaleString("es-AR") + '"\n\n';
                 csv += 'DETALLE DE CORTES\nHora,Barbero,Servicio,Pago,Precio,%,Comisión\n';
 
@@ -864,18 +887,20 @@
                     const barbero = a.barbero ? a.barbero.nombre : "-";
                     const servicio = a.servicio ? a.servicio.nombre : "-";
                     const precio = Number(a.precio || 0);
-                    const pct = a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : 0.40;
+                    const esJefeCorte = a.barbero && a.barbero.esJefe;
+                    const pct = esJefeCorte ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
                     const comision = precio * pct;
                     const hora = a.horaLlegada || "-";
-                    const esJefe = a.barbero && a.barbero.esJefe;
-                    csv += hora + ',' + (esJefe ? 'Jefe ' : '') + barbero + ',' + servicio + ',' + (a.formaPago || "-") + ',"$' + precio.toLocaleString("es-AR") + '",' + Math.round(pct * 100) + '%,"$' + comision.toLocaleString("es-AR") + '"\n';
+                    csv += hora + ',' + (esJefeCorte ? 'Jefe ' : '') + barbero + ',' + servicio + ',' + (a.formaPago || "-") + ',"$' + precio.toLocaleString("es-AR") + '",' + Math.round(pct * 100) + '%,"$' + comision.toLocaleString("es-AR") + '"\n';
                 });
 
                 csv += '\nRESUMEN POR BARBERO\nBarbero,Rol,Cortes,Facturado,%,Ganancia\n';
                 const totals = {};
                 cortesDia.forEach(function(a) {
                     const id = a.barbero ? a.barbero.idBarbero : 0;
-                    if (!totals[id]) { totals[id] = { nombre: a.barbero ? a.barbero.nombre : "?", esJefe: a.barbero ? a.barbero.esJefe : false, porcentaje: a.barbero && a.barbero.porcentajeComision ? a.barbero.porcentajeComision : 0.40, cortes: 0, total: 0, comision: 0 }; }
+                    const esJefeCorte = a.barbero && a.barbero.esJefe;
+                    const pct = esJefeCorte ? PORCENTAJE_JEFE : PORCENTAJE_BARBERO;
+                    if (!totals[id]) { totals[id] = { nombre: a.barbero ? a.barbero.nombre : "?", esJefe: esJefeCorte, porcentaje: pct, cortes: 0, total: 0, comision: 0 }; }
                     totals[id].cortes++;
                     const precio = Number(a.precio || 0);
                     totals[id].total += precio;
@@ -1007,6 +1032,6 @@
 
     iniciarApp();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33f79c61e750c2b',t:'MTc4ODIxNTM4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a33fa89cbcfd481f',t:'MTc4ODIxNzMwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
