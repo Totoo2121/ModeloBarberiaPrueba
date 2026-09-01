@@ -822,11 +822,6 @@
             document.getElementById("gananciaGabi").textContent = dinero(gananciaGabi);
             document.getElementById("gananciaDiego").textContent = dinero(gananciaDiego);
             document.getElementById("gananciaJefes").textContent = dinero(gananciaJefes);
-            
-            // Mostrar propinas si las hay
-            if (totalPropinas > 0) {
-                document.getElementById("facturacionJefe").textContent = dinero(facturacion) + " + " + dinero(totalPropinas) + " prop.";
-            }
 
             // Mostrar distribución detallada si hay cortes de barberos
             const cortesBarberos = cortesHoy.filter(a => !(a.barbero && a.barbero.esJefe === true));
@@ -1150,6 +1145,6 @@
 
     iniciarApp();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3400243ab6fa12e',t:'MTc4ODIyMDk3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3400b984b77b4ea',t:'MTc4ODIyMTM1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
