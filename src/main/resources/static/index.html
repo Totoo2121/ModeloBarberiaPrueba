@@ -586,13 +586,13 @@
                 total += Number(a.precio || 0);
                 totalPropinas += Number(a.propina || 0);
             });
-            const ganancia = (total * porcentajeUsuario) + totalPropinas;
+            const ganancia = total * porcentajeUsuario;
             const porcentajeTexto = Math.round(porcentajeUsuario * 100);
-            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = "Mi " + porcentajeTexto + "% + propinas";
+            document.querySelector("#miResumen .tarjeta:nth-child(3) h3").textContent = "Mi " + porcentajeTexto + "%";
             if (esJefe) document.getElementById("tituloMiResumen").textContent = "Mis cortes";
 
             document.getElementById("cantidadCortes").textContent = misCortes.length;
-            document.getElementById("totalGenerado").textContent = dinero(total) + (totalPropinas > 0 ? " + " + dinero(totalPropinas) + " prop." : "");
+            document.getElementById("totalGenerado").textContent = dinero(total);
             document.getElementById("miGanancia").textContent = dinero(ganancia);
 
             const tabla = document.getElementById("tablaCortes");
@@ -857,7 +857,7 @@
                     html += '<td style="padding:10px; font-size:14px; color:var(--texto);">' + nombreBarbero + ' <span style="color:var(--texto-suave); font-size:11px;">(' + (a.servicio ? a.servicio.nombre : '') + ')</span></td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--texto-medio);">' + dinero(precio) + '</td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--verde); font-weight:600;">' + (propina > 0 ? dinero(propina) : '-') + '</td>';
-                    html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--naranja); font-weight:600;">' + dinero(comisionBarbero) + (propina > 0 ? ' <span style="font-size:10px; color:var(--texto-suave);">+' + dinero(propina) + '</span>' : '') + '</td>';
+                    html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--naranja); font-weight:600;">' + dinero(comisionBarbero) + '</td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--violeta); font-weight:600;">' + dinero(comisionGabi) + '</td>';
                     html += '<td style="padding:10px; text-align:right; font-size:14px; color:var(--violeta); font-weight:600;">' + dinero(comisionDiego) + '</td>';
                     html += '</tr>';
@@ -870,7 +870,7 @@
                 html += '<td style="padding:12px 10px; font-size:13px; color:var(--texto);">TOTAL</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--texto-medio);">' + dinero(totalPrecios) + '</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--verde);">' + (totalPropinasTabla > 0 ? dinero(totalPropinasTabla) : '-') + '</td>';
-                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--naranja);">' + dinero(comisionesBarberos) + (totalPropinasTabla > 0 ? ' <span style="font-size:10px; color:var(--texto-suave);">+' + dinero(totalPropinasTabla) + '</span>' : '') + '</td>';
+                html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--naranja);">' + dinero(comisionesBarberos) + '</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--violeta);">' + dinero(gananciaGabi) + '</td>';
                 html += '<td style="padding:12px 10px; text-align:right; font-size:13px; color:var(--violeta);">' + dinero(gananciaDiego) + '</td>';
                 html += '</tr>';
@@ -916,7 +916,7 @@
 
                 const card = document.createElement("div");
                 card.className = "barbero-card";
-                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + (totalPropinaBarbero > 0 ? ' + ' + dinero(totalPropinaBarbero) + ' prop.' : '') + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia + totalPropinaBarbero) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
+                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
                 lista.appendChild(card);
             });
         } catch (error) { console.error(error); }
@@ -1071,10 +1071,10 @@
                 totalFacturado += Number(a.precio || 0);
                 totalPropinas += Number(a.propina || 0);
             });
-            const pagoLuciano = (totalFacturado * 0.50) + totalPropinas;
+            const pagoLuciano = totalFacturado * 0.50;
 
             document.getElementById('cortesSemana').textContent = cortesLuciano.length;
-            document.getElementById('facturadoSemana').textContent = dinero(totalFacturado) + (totalPropinas > 0 ? " + " + dinero(totalPropinas) + " prop." : "");
+            document.getElementById('facturadoSemana').textContent = dinero(totalFacturado);
             document.getElementById('pagoLuciano').textContent = dinero(pagoLuciano);
 
             const opciones = { day: 'numeric', month: 'long' };
@@ -1101,7 +1101,7 @@
             cortesLuciano.forEach(a => {
                 const fila = document.createElement('tr');
                 const propina = Number(a.propina || 0);
-                fila.innerHTML = '<td>' + new Date(a.fecha).toLocaleDateString('es-AR') + '</td><td>' + (a.horaLlegada || '-') + '</td><td>' + (a.servicio ? a.servicio.nombre : '-') + '</td><td>' + dinero(Number(a.precio || 0)) + '</td><td>' + (propina > 0 ? dinero(propina) : '-') + '</td><td style="color: var(--naranja); font-weight: 600;">' + dinero(Number(a.precio || 0) * 0.50 + propina) + '</td>';
+                fila.innerHTML = '<td>' + new Date(a.fecha).toLocaleDateString('es-AR') + '</td><td>' + (a.horaLlegada || '-') + '</td><td>' + (a.servicio ? a.servicio.nombre : '-') + '</td><td>' + dinero(Number(a.precio || 0)) + '</td><td>' + (propina > 0 ? dinero(propina) : '-') + '</td><td style="color: var(--naranja); font-weight: 600;">' + dinero(Number(a.precio || 0) * 0.50) + '</td>';
                 tabla.appendChild(fila);
             });
         } catch (error) { console.error('Error al cargar pago semanal:', error); }
@@ -1150,6 +1150,6 @@
 
     iniciarApp();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3400243ab6fa12e',t:'MTc4ODIyMDk3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
