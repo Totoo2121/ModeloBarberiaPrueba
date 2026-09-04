@@ -823,7 +823,11 @@
             const gananciaJefes = gananciaGabi + gananciaDiego;
 
             document.getElementById("totalCortesJefe").textContent = cortesHoy.length;
-            document.getElementById("facturacionJefe").textContent = dinero(facturacion);
+            if (totalPropinas > 0) {
+                document.getElementById("facturacionJefe").innerHTML = '<span style="font-size:16px;color:var(--texto-medio);display:block;">' + dinero(facturacion) + ' + ' + dinero(totalPropinas) + ' prop.</span>';
+            } else {
+                document.getElementById("facturacionJefe").textContent = dinero(facturacion);
+            }
             document.getElementById("totalEfectivo").textContent = dinero(totalEfectivo);
             document.getElementById("totalTransferencia").textContent = dinero(totalTransferencia);
             document.getElementById("gananciaBarberosJefe").textContent = dinero(comisionesBarberos);
@@ -1153,6 +1157,6 @@
 
     iniciarApp();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a34d289f7e60b519',t:'MTc4ODM1ODg2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 
 </html>
