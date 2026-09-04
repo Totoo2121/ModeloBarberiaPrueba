@@ -592,7 +592,11 @@
             if (esJefe) document.getElementById("tituloMiResumen").textContent = "Mis cortes";
 
             document.getElementById("cantidadCortes").textContent = misCortes.length;
-            document.getElementById("totalGenerado").textContent = dinero(total);
+            if (totalPropinas > 0) {
+                document.getElementById("totalGenerado").innerHTML = '<span style="font-size:16px;color:var(--texto-medio);display:block;">' + dinero(total) + ' + ' + dinero(totalPropinas) + ' prop.</span>';
+            } else {
+                document.getElementById("totalGenerado").textContent = dinero(total);
+            }
             document.getElementById("miGanancia").textContent = dinero(ganancia);
 
             const tabla = document.getElementById("tablaCortes");
@@ -921,9 +925,15 @@
                     infoExtra += '</div>';
                 }
 
+                const gananciaTotal = ganancia + totalPropinaBarbero;
+                let facturacionHTML = dinero(total);
+                if (totalPropinaBarbero > 0) {
+                    facturacionHTML = '<span style="font-size:13px;color:var(--texto-medio);display:inline-block;">' + dinero(total) + ' + ' + dinero(totalPropinaBarbero) + ' prop.</span>';
+                }
+
                 const card = document.createElement("div");
                 card.className = "barbero-card";
-                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + dinero(total) + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(ganancia) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
+                card.innerHTML = '<div class="barbero-header"><div><h3>' + icono + ' ' + barbero.nombre + '</h3><div class="barbero-info">' + cortes.length + ' corte(s) · Facturación: ' + facturacionHTML + ' · ' + etiquetaComision + ' (' + porcentajeTexto + '%): ' + dinero(gananciaTotal) + '</div>' + infoExtra + '</div><button class="boton-detalle" onclick="verDetalleBarbero(' + id + ', \'' + barbero.nombre + '\')">VER DETALLE</button></div>';
                 lista.appendChild(card);
             });
         } catch (error) { console.error(error); }
@@ -1081,7 +1091,11 @@
             const pagoLuciano = totalFacturado * 0.50;
 
             document.getElementById('cortesSemana').textContent = cortesLuciano.length;
-            document.getElementById('facturadoSemana').textContent = dinero(totalFacturado);
+            if (totalPropinas > 0) {
+                document.getElementById('facturadoSemana').innerHTML = '<span style="font-size:16px;color:var(--texto-medio);display:block;">' + dinero(totalFacturado) + ' + ' + dinero(totalPropinas) + ' prop.</span>';
+            } else {
+                document.getElementById('facturadoSemana').textContent = dinero(totalFacturado);
+            }
             document.getElementById('pagoLuciano').textContent = dinero(pagoLuciano);
 
             const opciones = { day: 'numeric', month: 'long' };
@@ -1157,6 +1171,6 @@
 
     iniciarApp();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a358c93e885d342e',t:'MTc4ODQ4MDc4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 
 </html>
